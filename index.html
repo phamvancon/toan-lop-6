@@ -1,0 +1,2289 @@
+import React, { useState, useEffect } from 'react';
+import { 
+  BookOpen, 
+  Award, 
+  Flame, 
+  Settings, 
+  LogOut, 
+  LogIn, 
+  User, 
+  CheckCircle, 
+  XCircle, 
+  Clock, 
+  ChevronRight, 
+  Menu, 
+  X, 
+  Play, 
+  RotateCcw,
+  BookMarked,
+  Sparkles,
+  Search,
+  Edit,
+  Trash2,
+  Plus
+} from 'lucide-react';
+
+// === HỆ THỐNG NGÂN HÀNG ĐỀ THI 35 TUẦN CHUẨN SGK KẾT NỐI TRI THỨC ===
+const WEEKLY_DATABASE = [
+  {
+    id: 'w1',
+    week: 1,
+    semester: 1,
+    title: 'Tuần 1: Tập hợp. Phần tử của tập hợp. Tập hợp số tự nhiên',
+    desc: 'Cách ghi, biểu diễn tập hợp, phần tử thuộc hay không thuộc và tập số tự nhiên ℕ, ℕ*.',
+    difficulty: 'Định kỳ',
+    questions: [
+      {
+        q: "Cho tập hợp A = {x ∈ ℕ | x < 5}. Viết tập hợp A dưới dạng liệt kê phần tử:",
+        options: ["A. A = {1; 2; 3; 4}", "B. A = {0; 1; 2; 3; 4}", "C. A = {0; 1; 2; 3; 4; 5}", "D. A = {1; 2; 3; 4; 5}"],
+        correct: 1,
+        explain: "Vì x thuộc tập hợp số tự nhiên ℕ (bao gồm cả số 0) và nhỏ hơn 5 nên A = {0; 1; 2; 3; 4}."
+      },
+      {
+        q: "Kí hiệu nào dùng để chỉ phần tử không thuộc tập hợp?",
+        options: ["A. ∈", "B. ∉", "C. ⊂", "D. ∩"],
+        correct: 1,
+        explain: "Kí hiệu ∉ biểu thị một phần tử không thuộc tập hợp."
+      }
+    ]
+  },
+  {
+    id: 'w2',
+    week: 2,
+    semester: 1,
+    title: 'Tuần 2: Cách ghi số tự nhiên. Thứ tự trong tập hợp số tự nhiên',
+    desc: 'Hệ thập phân, biểu diễn chữ số La Mã và thứ tự so sánh các số tự nhiên.',
+    difficulty: 'Định kỳ',
+    questions: [
+      {
+        q: "Số La Mã XXIV có giá trị tương ứng trong hệ thập phân là:",
+        options: ["A. 14", "B. 24", "C. 26", "D. 29"],
+        correct: 1,
+        explain: "X = 10, X = 10, IV = 4. Vậy XXIV = 10 + 10 + 4 = 24."
+      },
+      {
+        q: "Tìm số tự nhiên liền trước số 1 000 000:",
+        options: ["A. 999 999", "B. 1 000 001", "C. 999 990", "D. 999 900"],
+        correct: 0,
+        explain: "Số liền trước của một số tự nhiên n là n - 1. Vậy liền trước 1 000 000 là 999 999."
+      }
+    ]
+  },
+  {
+    id: 'w3',
+    week: 3,
+    semester: 1,
+    title: 'Tuần 3: Phép cộng, phép trừ và phép nhân, chia số tự nhiên',
+    desc: 'Tính chất giao hoán, kết hợp, phân phối và thực hiện phép chia hết, chia có dư.',
+    difficulty: 'Định kỳ',
+    questions: [
+      {
+        q: "Tính nhanh giá trị biểu thức: A = 25 . 17 . 4",
+        options: ["A. 170", "B. 1700", "C. 17000", "D. 680"],
+        correct: 1,
+        explain: "Áp dụng tính chất kết hợp: (25 . 4) . 17 = 100 . 17 = 1700."
+      },
+      {
+        q: "Phép chia 157 cho 12 có số dư là bao nhiêu?",
+        options: ["A. 1", "B. 13", "C. 5", "D. 11"],
+        correct: 0,
+        explain: "Ta có: 157 = 12 . 13 + 1. Vậy số dư là 1."
+      }
+    ]
+  },
+  {
+    id: 'w4',
+    week: 4,
+    semester: 1,
+    title: 'Tuần 4: Lũy thừa với số mũ tự nhiên. Nhân chia lũy thừa',
+    desc: 'Khái niệm lũy thừa, cơ số, số mũ. Các quy tắc nhân, chia hai lũy thừa cùng cơ số.',
+    difficulty: 'Định kỳ',
+    questions: [
+      {
+        q: "Tính giá trị của lũy thừa 3⁴:",
+        options: ["A. 12", "B. 81", "C. 64", "D. 27"],
+        correct: 1,
+        explain: "3⁴ = 3 . 3 . 3 . 3 = 81."
+      },
+      {
+        q: "Viết kết quả phép tính 2⁵ . 2³ dưới dạng một lũy thừa:",
+        options: ["A. 2¹⁵", "B. 4⁸", "C. 2⁸", "D. 2²"],
+        correct: 2,
+        explain: "Nhân hai lũy thừa cùng cơ số: giữ nguyên cơ số và cộng số mũ: 2⁵⁺³ = 2⁸."
+      }
+    ]
+  },
+  {
+    id: 'w5',
+    week: 5,
+    semester: 1,
+    title: 'Tuần 5: Thứ tự thực hiện các phép tính',
+    desc: 'Quy tắc thực hiện phép tính có hoặc không có dấu ngoặc tròn, vuông, nhọn.',
+    difficulty: 'Định kỳ',
+    questions: [
+      {
+        q: "Tính giá trị biểu thức: B = 20 - [30 - (2 . 5²)]",
+        options: ["A. 10", "B. 20", "C. 30", "D. 40"],
+        correct: 3,
+        explain: "Tính trong ngoặc tròn trước: 2 . 5² = 2 . 25 = 50. Ngoặc vuông: 30 - 50 = -20. Kết quả: 20 - (-20) = 40."
+      },
+      {
+        q: "Thứ tự thực hiện phép tính đối với biểu thức không có dấu ngoặc là:",
+        options: [
+          "A. Nhân chia -> Cộng trừ -> Lũy thừa",
+          "B. Lũy thừa -> Nhân chia -> Cộng trừ",
+          "C. Cộng trừ -> Nhân chia -> Lũy thừa",
+          "D. Lũy thừa -> Cộng trừ -> Nhân chia"
+        ],
+        correct: 1,
+        explain: "Ưu tiên thực hiện lũy thừa trước, sau đó đến nhân chia, cuối cùng mới đến cộng trừ."
+      }
+    ]
+  },
+  {
+    id: 'w6',
+    week: 6,
+    semester: 1,
+    title: 'Tuần 6: Chia hết và chia có dư. Tính chất chia hết của tổng',
+    desc: 'Quan hệ chia hết, tính chất chia hết của một tổng hoặc hiệu cho một số tự nhiên.',
+    difficulty: 'Định kỳ',
+    questions: [
+      {
+        q: "Không tính kết quả, hãy cho biết tổng nào sau đây chia hết cho 5?",
+        options: ["A. 15 + 20 + 34", "B. 25 + 35 + 100", "C. 10 + 15 + 27", "D. 50 + 65 + 18"],
+        correct: 1,
+        explain: "Vì cả 3 số 25, 35, 100 đều tận cùng là 5 hoặc 0 nên đều chia hết cho 5. Áp dụng tính chất chia hết của một tổng."
+      },
+      {
+        q: "Nếu a chia hết cho 4 và b chia hết cho 4 thì hiệu (a - b) chia hết cho mấy?",
+        options: ["A. 2", "B. 4", "C. 8", "D. Cả A và B đều đúng"],
+        correct: 3,
+        explain: "Vì a và b đều chia hết cho 4 nên hiệu (a - b) chia hết cho 4. Mà số chia hết cho 4 chắc chắn chia hết cho 2."
+      }
+    ]
+  },
+  {
+    id: 'w7',
+    week: 7,
+    semester: 1,
+    title: 'Tuần 7: Dấu hiệu chia hết cho 2, 5, 3, 9',
+    desc: 'Nhận biết dấu hiệu chia hết dựa vào chữ số tận cùng hoặc tổng các chữ số.',
+    difficulty: 'Định kỳ',
+    questions: [
+      {
+        q: "Số nào sau đây chia hết cho cả 2; 5 và 9?",
+        options: ["A. 135", "B. 270", "C. 360", "D. Cả B và C đều đúng"],
+        correct: 3,
+        explain: "Số chia hết cho 2 và 5 phải tận cùng là 0. Số chia hết cho 9 có tổng các chữ số chia hết cho 9. Cả 270 và 360 đều thỏa mãn."
+      },
+      {
+        q: "Tìm chữ số x để số 12x chia hết cho 3:",
+        options: ["A. x ∈ {0; 3; 6; 9}", "B. x ∈ {3; 6; 9}", "C. x ∈ {1; 4; 7}", "D. x ∈ {2; 5; 8}"],
+        correct: 0,
+        explain: "Để 12x chia hết cho 3 thì (1 + 2 + x) chia hết cho 3 => (3 + x) chia hết cho 3 => x ∈ {0; 3; 6; 9}."
+      }
+    ]
+  },
+  {
+    id: 'w8',
+    week: 8,
+    semester: 1,
+    title: 'Tuần 8: Số nguyên tố. Hợp số. Phân tích ra thừa số nguyên tố',
+    desc: 'Định nghĩa số nguyên tố, hợp số, cách phân tích một số tự nhiên lớn hơn 1 ra tích các thừa số nguyên tố.',
+    difficulty: 'Định kỳ',
+    questions: [
+      {
+        q: "Số nào sau đây là số nguyên tố lẻ nhỏ nhất?",
+        options: ["A. 1", "B. 2", "C. 3", "D. 5"],
+        correct: 2,
+        explain: "1 không phải số nguyên tố. 2 là số nguyên tố chẵn. Số nguyên tố lẻ nhỏ nhất là 3."
+      },
+      {
+        q: "Phân tích số 60 ra thừa số nguyên tố ta được kết quả là:",
+        options: ["A. 2² . 3 . 5", "B. 4 . 3 . 5", "C. 2 . 3 . 10", "D. 2² . 15"],
+        correct: 0,
+        explain: "60 = 4 . 15 = 2² . 3 . 5. Các thừa số phải hoàn toàn là số nguyên tố."
+      }
+    ]
+  },
+  {
+    id: 'w9',
+    week: 9,
+    semester: 1,
+    title: 'Tuần 9: Ước chung và Ước chung lớn nhất (ƯCLN)',
+    desc: 'Phương pháp tìm ƯCLN bằng cách phân tích ra thừa số nguyên tố. Ước chung thông qua ƯCLN.',
+    difficulty: 'Định kỳ',
+    questions: [
+      {
+        q: "Tìm ƯCLN(18, 30):",
+        options: ["A. 3", "B. 6", "C. 9", "D. 18"],
+        correct: 1,
+        explain: "18 = 2 . 3²; 30 = 2 . 3 . 5. Thừa số nguyên tố chung là 2 và 3 với số mũ nhỏ nhất là 1. ƯCLN = 2 . 3 = 6."
+      },
+      {
+        q: "Cho ƯCLN(a, b) = 1. Hai số a và b được gọi là hai số:",
+        options: ["A. Nguyên tố cùng nhau", "B. Số nguyên tố", "C. Hợp số", "D. Ước chung"],
+        correct: 0,
+        explain: "Hai số tự nhiên có ƯCLN bằng 1 được định nghĩa là hai số nguyên tố cùng nhau."
+      }
+    ]
+  },
+  {
+    id: 'w10',
+    week: 10,
+    semester: 1,
+    title: 'Tuần 10: Bội chung và Bội chung nhỏ nhất (BCNN)',
+    desc: 'Cách tìm BCNN bằng thừa số nguyên tố. Tìm bội chung thông qua bội của BCNN.',
+    difficulty: 'Định kỳ',
+    questions: [
+      {
+        q: "Tìm BCNN(8, 12):",
+        options: ["A. 4", "B. 24", "C. 48", "D. 12"],
+        correct: 1,
+        explain: "8 = 2³; 12 = 2² . 3. BCNN chọn thừa số chung và riêng với số mũ lớn nhất: 2³ . 3 = 24."
+      },
+      {
+        q: "Bội chung nhỏ nhất của hai số nguyên tố cùng nhau là:",
+        options: ["A. Hiệu của hai số", "B. Tổng của hai số", "C. Tích của hai số", "D. Thương của hai số"],
+        correct: 2,
+        explain: "Nếu hai số nguyên tố cùng nhau thì BCNN của chúng chính bằng tích của hai số đó."
+      }
+    ]
+  },
+  {
+    id: 'w11',
+    week: 11,
+    semester: 1,
+    title: 'Tuần 11: Ôn tập Chương I + Kiểm tra Giữa Học kỳ I',
+    desc: 'Đánh giá tổng hợp kiến thức số tự nhiên, phép toán, chia hết, ước và bội.',
+    difficulty: 'Định kỳ',
+    questions: [
+      {
+        q: "Tìm số tự nhiên x lớn nhất biết 48 chia hết cho x và 72 chia hết cho x:",
+        options: ["A. x = 12", "B. x = 24", "C. x = 8", "D. x = 16"],
+        correct: 1,
+        explain: "x lớn nhất là ƯCLN(48, 72) = 24."
+      },
+      {
+        q: "Tính nhanh: 125 + 75 . 3",
+        options: ["A. 600", "B. 350", "C. 450", "D. 300"],
+        correct: 1,
+        explain: "Thứ tự thực hiện: 75 . 3 = 225. Sau đó 125 + 225 = 350."
+      }
+    ]
+  },
+  {
+    id: 'w12',
+    week: 12,
+    semester: 1,
+    title: 'Tuần 12: Hình tam giác đều. Hình vuông. Hình lục giác đều',
+    desc: 'Nhận biết đặc điểm cạnh, góc, đường chéo của tam giác đều, hình vuông và lục giác đều.',
+    difficulty: 'Định kỳ',
+    questions: [
+      {
+        q: "Mỗi góc của hình tam giác đều có số đo bằng:",
+        options: ["A. 45 độ", "B. 60 độ", "C. 90 độ", "D. 120 độ"],
+        correct: 1,
+        explain: "Hình tam giác đều có 3 cạnh bằng nhau và 3 góc bằng nhau, mỗi góc bằng 60 độ."
+      },
+      {
+        q: "Hình lục giác đều có bao nhiêu đường chéo chính?",
+        options: ["A. 3 đường chéo", "B. 6 đường chéo", "C. 4 đường chéo", "D. 5 đường chéo"],
+        correct: 0,
+        explain: "Hình lục giác đều có đúng 3 đường chéo chính nối các đỉnh đối diện nhau."
+      }
+    ]
+  },
+  {
+    id: 'w13',
+    week: 13,
+    semester: 1,
+    title: 'Tuần 13: Hình chữ nhật. Hình thoi. Hình bình hành. Hình thang cân',
+    desc: 'Tính chất hình phẳng cơ bản trong thực tiễn.',
+    difficulty: 'Định kỳ',
+    questions: [
+      {
+        q: "Yếu tố nào sau đây là đặc điểm của hình thoi?",
+        options: [
+          "A. Bốn góc bằng nhau",
+          "B. Hai đường chéo vuông góc với nhau",
+          "C. Hai đường chéo song song",
+          "D. Bốn cạnh không bằng nhau"
+        ],
+        correct: 1,
+        explain: "Hình thoi có bốn cạnh bằng nhau và hai đường chéo vuông góc với nhau tại trung điểm của mỗi đường."
+      },
+      {
+        q: "Hình thang cân có yếu tố nào sau đây?",
+        options: [
+          "A. Hai góc kề một đáy bằng nhau",
+          "B. Hai đường chéo bằng nhau",
+          "C. Hai cạnh bên bằng nhau",
+          "D. Cả A, B, C đều đúng"
+        ],
+        correct: 3,
+        explain: "Hình thang cân có đầy đủ các yếu tố trên: hai cạnh bên bằng nhau, hai đường chéo bằng nhau, hai góc kề một đáy bằng nhau."
+      }
+    ]
+  },
+  {
+    id: 'w14',
+    week: 14,
+    semester: 1,
+    title: 'Tuần 14: Chu vi và diện tích của một số hình phẳng trong thực tế',
+    desc: 'Công thức tính chu vi, diện tích hình vuông, chữ nhật, bình hành, thoi, thang.',
+    difficulty: 'Định kỳ',
+    questions: [
+      {
+        q: "Tính diện tích hình thoi có độ dài hai đường chéo là 6 cm và 8 cm:",
+        options: ["A. 48 cm²", "B. 24 cm²", "C. 14 cm²", "D. 28 cm²"],
+        correct: 1,
+        explain: "Diện tích hình thoi bằng nửa tích hai đường chéo: S = (6 . 8) / 2 = 24 cm²."
+      },
+      {
+        q: "Hình bình hành có độ dài đáy là 10 cm, chiều cao tương ứng 5 cm có diện tích là:",
+        options: ["A. 50 cm²", "B. 25 cm²", "C. 30 cm²", "D. 15 cm²"],
+        correct: 0,
+        explain: "Diện tích hình bình hành S = a . h = 10 . 5 = 50 cm²."
+      }
+    ]
+  },
+  {
+    id: 'w15',
+    week: 15,
+    semester: 1,
+    title: 'Tuần 15: Hình có trục đối xứng. Đối xứng trục',
+    desc: 'Nhận biết trục đối xứng của các hình học phẳng và hình ảnh thực tế.',
+    difficulty: 'Định kỳ',
+    questions: [
+      {
+        q: "Hình tròn có bao nhiêu trục đối xứng?",
+        options: ["A. 1 trục", "B. 2 trục", "C. 4 trục", "D. Vô số trục đối xứng"],
+        correct: 3,
+        explain: "Mọi đường thẳng đi qua tâm của hình tròn đều là trục đối xứng của nó, nên hình tròn có vô số trục đối xứng."
+      },
+      {
+        q: "Chữ cái nào sau đây có trục đối xứng dọc?",
+        options: ["A. L", "B. F", "C. A", "D. S"],
+        correct: 2,
+        explain: "Chữ A có một trục đối xứng dọc chia đôi chữ cái thành hai phần đối xứng hoàn hảo."
+      }
+    ]
+  },
+  {
+    id: 'w16',
+    week: 16,
+    semester: 1,
+    title: 'Tuần 16: Hình có tâm đối xứng. Đối xứng tâm',
+    desc: 'Nhận biết tâm đối xứng của hình bình hành, hình tròn, hình vuông...',
+    difficulty: 'Định kỳ',
+    questions: [
+      {
+        q: "Hình nào sau đây KHÔNG có tâm đối xứng?",
+        options: ["A. Hình tròn", "B. Hình tam giác đều", "C. Hình vuông", "D. Hình lục giác đều"],
+        correct: 1,
+        explain: "Hình tam giác đều không có tâm đối xứng (nếu quay tam giác đều 180 độ quanh tâm của nó, nó sẽ ngược hướng so với ban đầu)."
+      },
+      {
+        q: "Tâm đối xứng của hình bình hành là:",
+        options: [
+          "A. Giao điểm của hai đường chéo",
+          "B. Trung điểm của một cạnh bên",
+          "C. Một đỉnh của hình bình hành",
+          "D. Không có tâm đối xứng"
+        ],
+        correct: 0,
+        explain: "Tâm đối xứng của hình bình hành chính là giao điểm của hai đường chéo."
+      }
+    ]
+  },
+  {
+    id: 'w17',
+    week: 17,
+    semester: 1,
+    title: 'Tuần 17: Số nguyên. Thứ tự trong tập hợp số nguyên',
+    desc: 'Tập hợp số nguyên ℤ, số nguyên âm, số nguyên dương, điểm gốc 0, biểu diễn trục số.',
+    difficulty: 'Định kỳ',
+    questions: [
+      {
+        q: "Sắp xếp các số nguyên sau theo thứ tự tăng dần: -5; 3; 0; -2; 1",
+        options: ["A. -5; -2; 0; 1; 3", "B. 3; 1; 0; -2; -5", "C. -2; -5; 0; 1; 3", "D. -5; -2; 0; 3; 1"],
+        correct: 0,
+        explain: "Số nguyên âm càng lớn thì giá trị càng nhỏ: -5 < -2 < 0 < 1 < 3."
+      },
+      {
+        q: "Số đối của số nguyên -12 là:",
+        options: ["A. -12", "B. 12", "C. 0", "D. 1/12"],
+        correct: 1,
+        explain: "Số đối của một số nguyên a là -a. Vậy số đối của -12 là 12."
+      }
+    ]
+  },
+  {
+    id: 'w18',
+    week: 18,
+    semester: 1,
+    title: 'Tuần 18: Phép cộng, trừ số nguyên. Quy tắc dấu ngoặc',
+    desc: 'Phép cộng cùng dấu, khác dấu. Phép trừ hai số nguyên và biến đổi phá dấu ngoặc.',
+    difficulty: 'Định kỳ',
+    questions: [
+      {
+        q: "Tính giá trị của phép tính: (-15) + (-20)",
+        options: ["A. -5", "B. 5", "C. -35", "D. 35"],
+        correct: 2,
+        explain: "Cộng hai số nguyên âm ta cộng hai phần số tự nhiên rồi thêm dấu trừ: -(15 + 20) = -35."
+      },
+      {
+        q: "Tính giá trị biểu thức: C = 10 - (-12)",
+        options: ["A. -2", "B. 2", "C. 22", "D. -22"],
+        correct: 2,
+        explain: "Trừ một số là cộng với số đối của nó: 10 - (-12) = 10 + 12 = 22."
+      }
+    ]
+  },
+  {
+    id: 'w19',
+    week: 19,
+    semester: 2,
+    title: 'Tuần 19: Phép nhân số nguyên. Ôn tập học kỳ I',
+    desc: 'Nhân hai số nguyên cùng dấu, khác dấu. Các tính chất phép nhân.',
+    difficulty: 'Định kỳ',
+    questions: [
+      {
+        q: "Kết quả của phép nhân (-5) . (-4) là:",
+        options: ["A. -20", "B. 20", "C. -9", "D. 9"],
+        correct: 1,
+        explain: "Tích của hai số nguyên cùng dấu âm là một số nguyên dương: (-5) . (-4) = 20."
+      },
+      {
+        q: "Tìm tập hợp các ước của số nguyên -4:",
+        options: ["A. {1; 2; 4}", "B. {-1; -2; -4}", "C. {-4; -2; -1; 1; 2; 4}", "D. {0; -4; 4}"],
+        correct: 2,
+        explain: "Tập ước số nguyên gồm cả ước dương và ước âm: ±1, ±2, ±4."
+      }
+    ]
+  },
+  {
+    id: 'w20',
+    week: 20,
+    semester: 2,
+    title: 'Tuần 20: Thu thập, phân loại và biểu diễn dữ liệu',
+    desc: 'Lập bảng số liệu ban đầu, thu thập dữ liệu bằng nhiều cách và kiểm tra tính hợp lý của dữ liệu.',
+    difficulty: 'Định kỳ',
+    questions: [
+      {
+        q: "Dữ liệu nào sau đây là dữ liệu không phải là số (dữ liệu định tính)?",
+        options: [
+          "A. Chiều cao của học sinh lớp 6",
+          "B. Số lượng học sinh giỏi của các lớp",
+          "C. Danh sách các môn thể thao yêu thích",
+          "D. Nhiệt độ trung bình các ngày"
+        ],
+        correct: 2,
+        explain: "Danh sách môn thể thao (bóng đá, cầu lông...) là dữ liệu dạng chữ (định tính), không phải dữ liệu số."
+      },
+      {
+        q: "Để điều tra về loại trái cây yêu thích của 30 học sinh trong lớp, ta dùng phương pháp nào phù hợp nhất?",
+        options: ["A. Đo đạc thực tế", "B. Làm phiếu hỏi/phỏng vấn", "C. Thí nghiệm", "D. Ước lượng cảm tính"],
+        correct: 1,
+        explain: "Sử dụng phiếu hỏi hoặc phỏng vấn trực tiếp là cách nhanh và chính xác nhất để thu thập ý kiến định tính."
+      }
+    ]
+  },
+  {
+    id: 'w21',
+    week: 21,
+    semester: 2,
+    title: 'Tuần 21: Biểu đồ tranh. Biểu đồ cột và biểu đồ cột kép',
+    desc: 'Đọc và khai thác thông tin từ biểu đồ tranh, biểu đồ cột, vẽ biểu đồ đơn giản.',
+    difficulty: 'Định kỳ',
+    questions: [
+      {
+        q: "Trong biểu đồ tranh, một biểu tượng ngôi sao đại diện cho 5 học sinh giỏi. Nếu lớp có 25 học sinh giỏi thì cần vẽ bao nhiêu ngôi sao?",
+        options: ["A. 5 ngôi sao", "B. 25 ngôi sao", "C. 10 ngôi sao", "D. 15 ngôi sao"],
+        correct: 0,
+        explain: "Số ngôi sao cần vẽ: 25 / 5 = 5 ngôi sao."
+      },
+      {
+        q: "Biểu đồ cột kép thường được dùng để:",
+        options: [
+          "A. Chỉ hiển thị một đối tượng duy nhất",
+          "B. So sánh hai tập dữ liệu của cùng các đối tượng",
+          "C. Tính phần trăm của toàn bộ dữ liệu",
+          "D. Vẽ biểu đồ hình tròn"
+        ],
+        correct: 1,
+        explain: "Biểu đồ cột kép dùng để so sánh trực quan hai nhóm số liệu của cùng một danh mục đối tượng."
+      }
+    ]
+  },
+  {
+    id: 'w22',
+    week: 22,
+    semester: 2,
+    title: 'Tuần 22: Phân số với tử và mẫu số là số nguyên. Phân số bằng nhau',
+    desc: 'Khái niệm tổng quát về phân số, điều kiện xác định và định nghĩa hai phân số bằng nhau.',
+    difficulty: 'Định kỳ',
+    questions: [
+      {
+        q: "Trong các cách viết sau, cách viết nào cho ta phân số?",
+        options: ["A. 1,5 / 3", "B. -2 / 5", "C. 4 / 0", "D. 3 / 2,5"],
+        correct: 1,
+        explain: "Phân số có dạng a/b với a, b là các số nguyên và mẫu b khác 0. Vậy -2/5 là phân số."
+      },
+      {
+        q: "Tìm số nguyên x biết x / 6 = -2 / 3:",
+        options: ["A. x = -4", "B. x = 4", "C. x = -2", "D. x = -12"],
+        correct: 0,
+        explain: "Theo định nghĩa hai phân số bằng nhau: x . 3 = 6 . (-2) => 3x = -12 => x = -4."
+      }
+    ]
+  },
+  {
+    id: 'w23',
+    week: 23,
+    semester: 2,
+    title: 'Tuần 23: Tính chất cơ bản của phân số. Rút gọn phân số',
+    desc: 'Nhân hoặc chia tử và mẫu với cùng một số nguyên khác 0. Rút gọn về phân số tối giản.',
+    difficulty: 'Định kỳ',
+    questions: [
+      {
+        q: "Rút gọn phân số -18 / 24 về dạng tối giản ta được:",
+        options: ["A. -9 / 12", "B. -3 / 4", "C. 3 / 4", "D. -6 / 8"],
+        correct: 1,
+        explain: "Chia cả tử và mẫu cho ƯCLN của 18 và 24 là 6: -18:6 / 24:6 = -3/4."
+      },
+      {
+        q: "Phân số nào sau đây là phân số tối giản?",
+        options: ["A. 4 / 10", "B. -3 / 9", "C. 5 / 7", "D. 12 / 18"],
+        correct: 2,
+        explain: "Tử và mẫu của 5/7 chỉ có ước chung là 1 và -1 nên đây là phân số tối giản."
+      }
+    ]
+  },
+  {
+    id: 'w24',
+    week: 24,
+    semester: 2,
+    title: 'Tuần 24: So sánh phân số. Hỗn số dương',
+    desc: 'Quy đồng mẫu số nhiều phân số để so sánh phân số cùng mẫu, khác mẫu. Đổi phân số sang hỗn số.',
+    difficulty: 'Định kỳ',
+    questions: [
+      {
+        q: "So sánh hai phân số: -3/5 và -4/5:",
+        options: ["A. -3/5 > -4/5", "B. -3/5 < -4/5", "C. -3/5 = -4/5", "D. Không so sánh được"],
+        correct: 0,
+        explain: "Hai phân số cùng mẫu dương, phân số nào có tử lớn hơn thì lớn hơn. Vì -3 > -4 nên -3/5 > -4/5."
+      },
+      {
+        q: "Viết phân số 7 / 3 dưới dạng hỗn số:",
+        options: ["A. 1 và 2/3", "B. 2 và 1/3", "C. 3 và 1/2", "D. 2 và 3/1"],
+        correct: 1,
+        explain: "7 chia 3 được thương là 2, dư 1. Vậy 7/3 = 2 và 1/3."
+      }
+    ]
+  },
+  {
+    id: 'w25',
+    week: 25,
+    semester: 2,
+    title: 'Tuần 25: Phép cộng và phép trừ phân số',
+    desc: 'Các quy tắc cộng, trừ phân số cùng mẫu và không cùng mẫu số.',
+    difficulty: 'Định kỳ',
+    questions: [
+      {
+        q: "Tính tổng: S = 1/3 + -5/3",
+        options: ["A. -4/3", "B. 4/3", "C. -2", "D. -1"],
+        correct: 0,
+        explain: "S = (1 + (-5)) / 3 = -4/3."
+      },
+      {
+        q: "Kết quả phép tính 1/2 - 1/4 là:",
+        options: ["A. -1/4", "B. 1/4", "C. 3/4", "D. 1/2"],
+        correct: 1,
+        explain: "Quy đồng mẫu số: 2/4 - 1/4 = 1/4."
+      }
+    ]
+  },
+  {
+    id: 'w26',
+    week: 26,
+    semester: 2,
+    title: 'Tuần 26: Phép nhân và phép chia phân số',
+    desc: 'Quy tắc nhân tử với tử, mẫu với mẫu. Quy tắc nhân đảo ngược để thực hiện phép chia phân số.',
+    difficulty: 'Định kỳ',
+    questions: [
+      {
+        q: "Tính tích: A = -3/5 . 10/9",
+        options: ["A. -2/3", "B. -27/50", "C. 2/3", "D. -1/3"],
+        correct: 0,
+        explain: "A = (-3 . 10) / (5 . 9) = -30 / 45 = -2/3."
+      },
+      {
+        q: "Tìm phân số nghịch đảo của phân số -4 / 7:",
+        options: ["A. 4 / 7", "B. -7 / 4", "C. 7 / 4", "D. 1/7"],
+        correct: 1,
+        explain: "Phân số nghịch đảo của a/b là b/a. Nghịch đảo của -4/7 là -7/4."
+      }
+    ]
+  },
+  {
+    id: 'w27',
+    week: 27,
+    semester: 2,
+    title: 'Tuần 27: Hai bài toán cơ bản về phân số',
+    desc: 'Tìm giá trị phân số của một số cho trước; Tìm một số khi biết giá trị phân số của nó.',
+    difficulty: 'Định kỳ',
+    questions: [
+      {
+        q: "Tìm 2/3 của số 30:",
+        options: ["A. 20", "B. 10", "C. 45", "D. 15"],
+        correct: 0,
+        explain: "Giá trị cần tìm: 30 . 2/3 = 20."
+      },
+      {
+        q: "Tìm một số biết 3/4 của số đó bằng 15:",
+        options: ["A. 20", "B. 11.25", "C. 45", "D. 30"],
+        correct: 0,
+        explain: "Số cần tìm là: 15 : 3/4 = 15 . 4/3 = 20."
+      }
+    ]
+  },
+  {
+    id: 'w28',
+    week: 28,
+    semester: 2,
+    title: 'Tuần 28: Ôn tập chương Phân số + Kiểm tra Giữa Học kỳ II',
+    desc: 'Kiểm tra tổng hợp các kỹ năng tính toán, so sánh và toán thực tế về phân số.',
+    difficulty: 'Định kỳ',
+    questions: [
+      {
+        q: "Giá trị của biểu thức M = (1/2 + 1/3) . 6 là:",
+        options: ["A. 5", "B. 6", "C. 1", "D. 10"],
+        correct: 0,
+        explain: "M = (3/6 + 2/6) . 6 = 5/6 . 6 = 5."
+      },
+      {
+        q: "Rút gọn biểu thức (3 . 4) / (2 . 9) về tối giản:",
+        options: ["A. 12 / 18", "B. 2 / 3", "C. 3 / 2", "D. 4 / 9"],
+        correct: 1,
+        explain: "Tử = 12, mẫu = 18. Rút gọn chia cả hai cho 6 ta được 2/3."
+      }
+    ]
+  },
+  {
+    id: 'w29',
+    week: 29,
+    semester: 2,
+    title: 'Tuần 29: Điểm. Đường thẳng. Tia',
+    desc: 'Khái niệm điểm thuộc/không thuộc đường thẳng, ba điểm thẳng hàng, tia, hai tia đối nhau.',
+    difficulty: 'Định kỳ',
+    questions: [
+      {
+        q: "Qua hai điểm phân biệt A và B, ta vẽ được bao nhiêu đường thẳng?",
+        options: ["A. Chỉ 1 đường thẳng duy nhất", "B. 2 đường thẳng", "C. Vô số đường thẳng", "D. Không vẽ được đường nào"],
+        correct: 0,
+        explain: "Theo tiên đề hình học phẳng: Qua hai điểm phân biệt chỉ vẽ được duy nhất một đường thẳng."
+      },
+      {
+        q: "Thế nào là hai tia đối nhau?",
+        options: [
+          "A. Hai tia chung gốc",
+          "B. Hai tia chung gốc và tạo thành một đường thẳng",
+          "C. Hai tia không giao nhau",
+          "D. Hai tia cùng hướng"
+        ],
+        correct: 1,
+        explain: "Hai tia đối nhau phải thỏa mãn hai điều kiện: Chung gốc và tạo thành một đường thẳng."
+      }
+    ]
+  },
+  {
+    id: 'w30',
+    week: 30,
+    semester: 2,
+    title: 'Tuần 30: Đoạn thẳng. Độ dài đoạn thẳng. Trung điểm của đoạn thẳng',
+    desc: 'Đoạn thẳng, so sánh độ dài đoạn thẳng và định nghĩa trung điểm của một đoạn thẳng.',
+    difficulty: 'Định kỳ',
+    questions: [
+      {
+        q: "Nếu M là trung điểm của đoạn thẳng AB = 8 cm thì độ dài đoạn thẳng AM là:",
+        options: ["A. 8 cm", "B. 4 cm", "C. 2 cm", "D. 16 cm"],
+        correct: 1,
+        explain: "M là trung điểm của AB nên AM = MB = AB / 2 = 8 / 2 = 4 cm."
+      },
+      {
+        q: "Điểm I nằm giữa hai điểm A và B khi thỏa mãn hệ thức nào sau đây?",
+        options: ["A. IA = IB", "B. IA + IB = AB", "C. IA + AB = IB", "D. IA - IB = AB"],
+        correct: 1,
+        explain: "Điều kiện cần và đủ để điểm I nằm giữa hai điểm A và B là IA + IB = AB."
+      }
+    ]
+  },
+  {
+    id: 'w31',
+    week: 31,
+    semester: 2,
+    title: 'Tuần 31: Góc. Số đo góc. Các góc nhọn, vuông, tù, bẹt',
+    desc: 'Định nghĩa góc, đỉnh, cạnh của góc, cách dùng thước đo góc và phân loại góc theo số đo.',
+    difficulty: 'Định kỳ',
+    questions: [
+      {
+        q: "Góc bẹt có số đo bằng bao nhiêu độ?",
+        options: ["A. 90 độ", "B. 180 độ", "C. 60 độ", "D. 360 độ"],
+        correct: 1,
+        explain: "Góc bẹt là góc có hai cạnh là hai tia đối nhau, số đo bằng 180 độ."
+      },
+      {
+        q: "Góc nhọn là góc có số đo:",
+        options: [
+          "A. Lớn hơn 0 độ và nhỏ hơn 90 độ",
+          "B. Bằng 90 độ",
+          "C. Lớn hơn 90 độ và nhỏ hơn 180 độ",
+          "D. Bằng 180 độ"
+        ],
+        correct: 0,
+        explain: "Góc nhọn có số đo lớn hơn 0 độ và nhỏ hơn số đo của góc vuông (90 độ)."
+      }
+    ]
+  },
+  {
+    id: 'w32',
+    week: 32,
+    semester: 2,
+    title: 'Tuần 32: Số thập phân. So sánh số thập phân',
+    desc: 'Viết phân số dưới dạng số thập phân, cấu trúc hàng số thập phân và so sánh số thập phân.',
+    difficulty: 'Định kỳ',
+    questions: [
+      {
+        q: "Viết phân số -3 / 5 dưới dạng số thập phân:",
+        options: ["A. -0.3", "B. -0.6", "C. 0.6", "D. -1.5"],
+        correct: 1,
+        explain: "-3 / 5 = -6 / 10 = -0.6."
+      },
+      {
+        q: "Sắp xếp các số thập phân sau theo thứ tự giảm dần: -1.5; 0.8; -2.1; 1.2",
+        options: ["A. 1.2; 0.8; -1.5; -2.1", "B. -2.1; -1.5; 0.8; 1.2", "C. 1.2; 0.8; -2.1; -1.5", "D. 0.8; 1.2; -1.5; -2.1"],
+        correct: 0,
+        explain: "Thứ tự giảm dần từ số dương lớn nhất đến số âm nhỏ nhất: 1.2 > 0.8 > -1.5 > -2.1."
+      }
+    ]
+  },
+  {
+    id: 'w33',
+    week: 33,
+    semester: 2,
+    title: 'Tuần 33: Phép tính với số thập phân. Làm tròn và ước lượng',
+    desc: 'Các phép tính cộng, trừ, nhân, chia số thập phân. Quy tắc làm tròn số.',
+    difficulty: 'Định kỳ',
+    questions: [
+      {
+        q: "Kết quả của phép tính: 2.5 . (-0.4)",
+        options: ["A. -1", "B. 1", "C. -10", "D. -0.1"],
+        correct: 0,
+        explain: "Nhân hai số trái dấu cho kết quả âm: 2.5 . (-0.4) = -1.0."
+      },
+      {
+        q: "Làm tròn số thập phân 15.483 đến hàng phần mười (chữ số thập phân thứ nhất):",
+        options: ["A. 15.5", "B. 15.4", "C. 15.48", "D. 15.0"],
+        correct: 0,
+        explain: "Chữ số ngay sau hàng phần mười là 8 (>= 5) nên ta cộng thêm 1 vào hàng phần mười và bỏ phần sau: 15.5."
+      }
+    ]
+  },
+  {
+    id: 'w34',
+    week: 34,
+    semester: 2,
+    title: 'Tuần 34: Tỉ số và Tỉ số phần trăm. Bài toán phần trăm',
+    desc: 'Khái niệm tỉ số của hai số, tỉ số phần trăm và ứng dụng thực tế giải toán phần trăm.',
+    difficulty: 'Định kỳ',
+    questions: [
+      {
+        q: "Viết phân số 3/4 dưới dạng tỉ số phần trăm:",
+        options: ["A. 34%", "B. 75%", "C. 30%", "D. 0.75%"],
+        correct: 1,
+        explain: "3/4 = 0.75 = 75%."
+      },
+      {
+        q: "Một lớp học có 40 học sinh, trong đó có 10 học sinh giỏi. Tìm tỉ số phần trăm học sinh giỏi so với cả lớp:",
+        options: ["A. 10%", "B. 25%", "C. 40%", "D. 30%"],
+        correct: 1,
+        explain: "Tỉ số phần trăm: (10 / 40) . 100% = 25%."
+      }
+    ]
+  },
+  {
+    id: 'w35',
+    week: 35,
+    semester: 2,
+    title: 'Tuần 35: Xác suất thực nghiệm. Ôn tập cuối năm',
+    desc: 'Làm quen khái niệm xác suất thực nghiệm trong một số trò chơi đơn giản và ôn tập tổng kết môn học.',
+    difficulty: 'Định kỳ',
+    questions: [
+      {
+        q: "Tung một đồng xu 20 lần thấy có 8 lần xuất hiện mặt Ngửa. Xác suất thực nghiệm xuất hiện mặt Ngửa là:",
+        options: ["A. 2/5", "B. 8%", "C. 3/5", "D. 1/2"],
+        correct: 0,
+        explain: "Xác suất thực nghiệm = Số lần sự kiện xảy ra / Tổng số lần thực nghiệm = 8/20 = 2/5 (hoặc 40%)."
+      },
+      {
+        q: "Tính giá trị biểu thức rút gọn: (1/3 - 1/2) : 1/6",
+        options: ["A. -1", "B. 1", "C. -2", "D. 5"],
+        correct: 0,
+        explain: "1/3 - 1/2 = 2/6 - 3/6 = -1/6. Thực hiện phép chia: -1/6 : 1/6 = -1."
+      }
+    ]
+  }
+];
+
+// === NGÂN HÀNG CHƯƠNG TRÌNH LÝ THUYẾT SGK ===
+const SGK_DATABASE = {
+  lessons: [
+    {
+      id: 'c1',
+      title: 'Chương 1: Tập hợp các số tự nhiên',
+      desc: 'Tập hợp, phần tử, các phép tính cơ bản, lũy thừa với số mũ tự nhiên, thứ tự thực hiện phép tính.',
+      difficulty: 'Cơ bản',
+      questions: [
+        {
+          q: "Cho tập hợp M = {x ∈ ℕ | 5 < x ≤ 9}. Tập hợp M viết dưới dạng liệt kê phần tử là:",
+          options: ["A. M = {5; 6; 7; 8; 9}", "B. M = {6; 7; 8}", "C. M = {6; 7; 8; 9}", "D. M = {5; 6; 7; 8}"],
+          correct: 2,
+          explain: "x là số tự nhiên lớn hơn 5 (không lấy 5) và nhỏ hơn hoặc bằng 9 (lấy cả 9), vậy M = {6; 7; 8; 9}."
+        }
+      ]
+    },
+    {
+      id: 'c2',
+      title: 'Chương 2: Tính chất chia hết trong tập hợp số tự nhiên',
+      desc: 'Dấu hiệu chia hết cho 2, 3, 5, 9; Số nguyên tố, hợp số; ƯCLN và BCNN.',
+      difficulty: 'Cơ bản',
+      questions: [
+        {
+          q: "Ước chung lớn nhất của hai số 12 và 18, kí hiệu ƯCLN(12, 18) là:",
+          options: ["A. 3", "B. 6", "C. 36", "D. 2"],
+          correct: 1,
+          explain: "Ước của 12 là {1,2,3,4,6,12}. Ước của 18 là {1,2,3,6,9,18}. Ước chung lớn nhất là 6."
+        }
+      ]
+    },
+    {
+      id: 'c3',
+      title: 'Chương 3: Số nguyên',
+      desc: 'Tập hợp số nguyên, phép cộng, trừ, nhân, chia hai số nguyên, quy tắc dấu ngoặc.',
+      difficulty: 'Cơ bản',
+      questions: [
+        {
+          q: "Kết quả của phép tính (-15) + (-25) là:",
+          options: ["A. -40", "B. 10", "C. -10", "D. 40"],
+          correct: 0,
+          explain: "Cộng hai số nguyên âm: ta cộng hai phần số tự nhiên rồi đặt dấu trừ trước kết quả: -(15 + 25) = -40."
+        }
+      ]
+    }
+  ],
+  advanced: [
+    {
+      id: 'nc1',
+      title: 'Chuyên đề 1: Chứng minh chia hết nâng cao',
+      desc: 'Ứng dụng tính chất chia hết của một tổng, một tích để giải các bài toán thi Học sinh giỏi cực hay.',
+      difficulty: 'Nâng cao',
+      questions: [
+        {
+          q: "Cho biểu thức S = 3¹ + 3² + 3³ + ... + 3⁶⁰. Phát biểu nào sau đây là đúng nhất?",
+          options: [
+            "A. S chia hết cho 4 và không chia hết cho 13",
+            "B. S vừa chia hết cho 4, vừa chia hết cho 13",
+            "C. S chỉ chia hết cho 3, không chia hết cho 4",
+            "D. S chia hết cho 5"
+          ],
+          correct: 1,
+          explain: "Ghép nhóm: S = (3¹+3²) + (3³+3⁴) + ... = 3(1+3) + 3³(1+3) = 4.(3 + 3³ + ...) chia hết cho 4. Tương tự ghép bộ 3 số: (3¹+3²+3³) = 3(1+3+9) = 13 . 3 chia hết cho 13. Vậy S chia hết cho cả 4 và 13."
+        }
+      ]
+    }
+  ]
+};
+
+// === LỊCH SỬ BAN ĐẦU MẪU ===
+const INITIAL_STUDENT_LOGS = [
+  { id: '1', studentId: 'ECO002', name: 'Nguyễn Minh Anh', quizTitle: 'Tuần 1: Tập hợp. Phần tử của tập hợp', score: 100, maxScore: 100, date: '2026-06-20 10:30', difficulty: 'Định kỳ' },
+  { id: '2', studentId: 'ECO002', name: 'Nguyễn Minh Anh', quizTitle: 'Tuần 2: Cách ghi số tự nhiên', score: 100, maxScore: 100, date: '2026-06-20 11:15', difficulty: 'Định kỳ' }
+];
+
+export default function App() {
+  const [studentId, setStudentId] = useState(() => localStorage.getItem('toan6_student_id') || '');
+  const [studentInput, setStudentInput] = useState('');
+  const [currentPage, setCurrentPage] = useState('home');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  
+  // Trạng thái bộ lọc và tìm kiếm tuần
+  const [selectedSemester, setSelectedSemester] = useState('all'); // all, s1, s2
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // Trạng thái bài Quiz đang làm
+  const [activeQuiz, setActiveQuiz] = useState(null);
+  const [currentQuestionIdx, setCurrentQuestionIdx] = useState(0);
+  const [answers, setAnswers] = useState({}); // { questionIndex: selectedOptionIndex }
+  const [quizFinished, setQuizFinished] = useState(false);
+  
+  // Trạng thái Admin đăng nhập
+  const [adminPassword, setAdminPassword] = useState('');
+  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
+  const [adminError, setAdminError] = useState('');
+  
+  // Quản lý việc Sửa/Thêm thông tin học sinh của Admin
+  const [editingAttempt, setEditingAttempt] = useState(null); // Bản ghi học sinh đang sửa đổi
+  const [isAddingAttempt, setIsAddingAttempt] = useState(false); // Trạng thái form thêm điểm thủ công
+  const [newManualRecord, setNewManualRecord] = useState({
+    studentId: '',
+    quizTitle: 'Tuần 1: Tập hợp. Phần tử của tập hợp. Tập hợp số tự nhiên',
+    score: '100',
+    difficulty: 'Định kỳ',
+    date: ''
+  });
+
+  // Lịch sử bài làm (Lưu vào Memory & LocalStorage)
+  const [attempts, setAttempts] = useState(() => {
+    const saved = localStorage.getItem('toan6_attempts');
+    return saved ? JSON.parse(saved) : INITIAL_STUDENT_LOGS;
+  });
+
+  // Trò chơi tính nhanh (Góc giải trí toán học)
+  const [gameActive, setGameActive] = useState(false);
+  const [num1, setNum1] = useState(0);
+  const [num2, setNum2] = useState(0);
+  const [operator, setOperator] = useState('+');
+  const [gameScore, setGameScore] = useState(0);
+  const [timeLeft, setTimeLeft] = useState(15);
+  const [gameAnsInput, setGameAnsInput] = useState('');
+  const [gameHighscore, setGameHighscore] = useState(() => Number(localStorage.getItem('toan6_game_hs') || 0));
+
+  // Custom Alert Modal
+  const [modalMessage, setModalMessage] = useState(null); // { title, content, type: 'success' | 'info' | 'error' }
+
+  // Sync attempts to LocalStorage
+  useEffect(() => {
+    localStorage.setItem('toan6_attempts', JSON.stringify(attempts));
+  }, [attempts]);
+
+  // Game Timer Effect
+  useEffect(() => {
+    let timer;
+    if (gameActive && timeLeft > 0) {
+      timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
+    } else if (gameActive && timeLeft === 0) {
+      endGame();
+    }
+    return () => clearTimeout(timer);
+  }, [gameActive, timeLeft]);
+
+  // --- HÀM XỬ LÝ ĐĂNG NHẬP HỌC SINH ---
+  const handleStudentLogin = (e) => {
+    e.preventDefault();
+    const cleanId = studentInput.trim().toUpperCase();
+    if (!cleanId) {
+      showModal("Lỗi đăng nhập", "Vui lòng nhập tên tài khoản hoặc mã số học sinh của bạn!", "error");
+      return;
+    }
+    setStudentId(cleanId);
+    localStorage.setItem('toan6_student_id', cleanId);
+    showModal("Đăng nhập thành công", `Chào mừng học sinh ${cleanId} tham gia lớp học Toán 6!`, "success");
+    setCurrentPage('home');
+  };
+
+  const handleLogout = () => {
+    setStudentId('');
+    localStorage.removeItem('toan6_student_id');
+    setCurrentPage('home');
+    setStudentInput('');
+    setIsAdminLoggedIn(false);
+    showModal("Đã đăng xuất", "Hẹn gặp lại bạn trong các bài học tiếp theo!", "info");
+  };
+
+  // --- HÀM ĐIỀU HƯỚNG ---
+  const navigateTo = (page) => {
+    setCurrentPage(page);
+    setMobileMenuOpen(false);
+    if (page !== 'quiz-play') {
+      setActiveQuiz(null);
+      setQuizFinished(false);
+    }
+  };
+
+  // --- HÀM PHỤC VỤ QUIZ TỰ ĐỘNG ---
+  const startNewQuiz = (quiz) => {
+    if (!studentId) {
+      showModal("Yêu cầu đăng nhập", "Bạn cần điền tên tài khoản học sinh ở góc trên hoặc thanh đăng nhập để lưu kết quả bài làm!", "info");
+      navigateTo('home');
+      return;
+    }
+    setActiveQuiz(quiz);
+    setCurrentQuestionIdx(0);
+    setAnswers({});
+    setQuizFinished(false);
+    navigateTo('quiz-play');
+  };
+
+  const handleSelectOption = (optIdx) => {
+    if (quizFinished) return;
+    setAnswers({
+      ...answers,
+      [currentQuestionIdx]: optIdx
+    });
+  };
+
+  const nextQuestion = () => {
+    if (currentQuestionIdx < activeQuiz.questions.length - 1) {
+      setCurrentQuestionIdx(currentQuestionIdx + 1);
+    }
+  };
+
+  const prevQuestion = () => {
+    if (currentQuestionIdx > 0) {
+      setCurrentQuestionIdx(currentQuestionIdx - 1);
+    }
+  };
+
+  const submitQuiz = () => {
+    if (Object.keys(answers).length < activeQuiz.questions.length) {
+      showModal("Chưa hoàn thành", "Bạn vui lòng hoàn thành tất cả các câu hỏi trước khi nộp bài nhé!", "info");
+      return;
+    }
+
+    setQuizFinished(true);
+
+    let correctCount = 0;
+    activeQuiz.questions.forEach((q, idx) => {
+      if (answers[idx] === q.correct) {
+        correctCount++;
+      }
+    });
+
+    const finalScore = Math.round((correctCount / activeQuiz.questions.length) * 100);
+
+    const newAttempt = {
+      id: Date.now().toString(),
+      studentId: studentId,
+      name: `Học sinh ${studentId}`,
+      quizTitle: activeQuiz.title,
+      score: finalScore,
+      maxScore: 100,
+      date: new Date().toISOString().replace('T', ' ').substring(0, 16),
+      difficulty: activeQuiz.difficulty
+    };
+
+    setAttempts([newAttempt, ...attempts]);
+  };
+
+  // --- HÀM XỬ LÝ ADMIN ---
+  const handleAdminLogin = (e) => {
+    e.preventDefault();
+    if (adminPassword === '215151365') {
+      setIsAdminLoggedIn(true);
+      setAdminError('');
+    } else {
+      setAdminError('Mật khẩu không chính xác. Thử lại!');
+    }
+  };
+
+  const deleteStudentAttempt = (id) => {
+    setAttempts(attempts.filter(item => item.id !== id));
+    showModal("Đã xóa", "Đã xóa thành công thông tin học sinh & bài nộp khỏi danh sách.", "info");
+  };
+
+  const startEditAttempt = (attempt) => {
+    setEditingAttempt({ ...attempt });
+  };
+
+  const saveEditedAttempt = (e) => {
+    e.preventDefault();
+    setAttempts(attempts.map(item => item.id === editingAttempt.id ? editingAttempt : item));
+    setEditingAttempt(null);
+    showModal("Đã cập nhật", "Thông tin bài làm của học sinh đã được sửa đổi thành công!", "success");
+  };
+
+  const handleCreateManualRecord = (e) => {
+    e.preventDefault();
+    if (!newManualRecord.studentId.trim()) {
+      showModal("Thiếu thông tin", "Vui lòng nhập Mã số học sinh!", "error");
+      return;
+    }
+
+    const manualAttempt = {
+      id: Date.now().toString(),
+      studentId: newManualRecord.studentId.toUpperCase().trim(),
+      name: `Học sinh ${newManualRecord.studentId.trim()}`,
+      quizTitle: newManualRecord.quizTitle,
+      score: parseInt(newManualRecord.score) || 0,
+      maxScore: 100,
+      date: newManualRecord.date || new Date().toISOString().replace('T', ' ').substring(0, 16),
+      difficulty: newManualRecord.difficulty
+    };
+
+    setAttempts([manualAttempt, ...attempts]);
+    setIsAddingAttempt(false);
+    setNewManualRecord({
+      studentId: '',
+      quizTitle: 'Tuần 1: Tập hợp. Phần tử của tập hợp. Tập hợp số tự nhiên',
+      score: '100',
+      difficulty: 'Định kỳ',
+      date: ''
+    });
+    showModal("Thành công", "Đã thêm thủ công điểm thi của học sinh mới!", "success");
+  };
+
+  // --- TRÒ CHƠI PHẢN XẠ TOÁN HỌC ---
+  const generateProblem = () => {
+    const ops = ['+', '-', '*'];
+    const selectedOp = ops[Math.floor(Math.random() * ops.length)];
+    let n1, n2;
+
+    if (selectedOp === '+') {
+      n1 = Math.floor(Math.random() * 50) + 5;
+      n2 = Math.floor(Math.random() * 50) + 5;
+    } else if (selectedOp === '-') {
+      n1 = Math.floor(Math.random() * 60) + 10;
+      n2 = Math.floor(Math.random() * n1); 
+    } else {
+      n1 = Math.floor(Math.random() * 12) + 2;
+      n2 = Math.floor(Math.random() * 10) + 2;
+    }
+
+    setNum1(n1);
+    setNum2(n2);
+    setOperator(selectedOp);
+    setGameAnsInput('');
+  };
+
+  const startGame = () => {
+    setGameActive(true);
+    setGameScore(0);
+    setTimeLeft(20);
+    generateProblem();
+  };
+
+  const handleGameSubmit = (e) => {
+    e.preventDefault();
+    let correctAnswer;
+    if (operator === '+') correctAnswer = num1 + num2;
+    else if (operator === '-') correctAnswer = num1 - num2;
+    else if (operator === '*') correctAnswer = num1 * num2;
+
+    if (parseInt(gameAnsInput.trim()) === correctAnswer) {
+      setGameScore(gameScore + 10);
+      setTimeLeft(prev => Math.min(prev + 3, 25));
+      generateProblem();
+    } else {
+      showModal("Sai rồi!", `Kết quả đúng của phép tính ${num1} ${operator === '*' ? 'x' : operator} ${num2} phải là ${correctAnswer}`, "error");
+      generateProblem();
+    }
+  };
+
+  const endGame = () => {
+    setGameActive(false);
+    if (gameScore > gameHighscore) {
+      setGameHighscore(gameScore);
+      localStorage.setItem('toan6_game_hs', gameScore.toString());
+      showModal("Kỷ lục mới!", `Tuyệt vời! Bạn đã phá kỷ lục cá nhân với điểm số: ${gameScore} điểm!`, "success");
+    } else {
+      showModal("Trò chơi kết thúc", `Bạn đã đạt được ${gameScore} điểm trong lượt chơi này.`, "info");
+    }
+  };
+
+  const showModal = (title, content, type = 'info') => {
+    setModalMessage({ title, content, type });
+  };
+
+  const closeModal = () => {
+    setModalMessage(null);
+  };
+
+  // Lọc danh sách tuần học
+  const filteredWeeks = WEEKLY_DATABASE.filter(item => {
+    const matchesSemester = 
+      selectedSemester === 'all' || 
+      (selectedSemester === 's1' && item.semester === 1) || 
+      (selectedSemester === 's2' && item.semester === 2);
+    const matchesSearch = 
+      item.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      item.desc.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesSemester && matchesSearch;
+  });
+
+  // Tính số tuần học sinh đã đạt điểm 100
+  const completedWeeksCount = WEEKLY_DATABASE.filter(week => {
+    return attempts.some(attempt => attempt.studentId === studentId && attempt.quizTitle === week.title && attempt.score === 100);
+  }).length;
+
+  return (
+    <div className="min-h-screen bg-slate-50 flex flex-col font-sans text-slate-800">
+      
+      {/* GLOBAL MODAL BANNER */}
+      {modalMessage && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 transition-opacity">
+          <div className="bg-white rounded-xl shadow-2xl max-w-md w-full overflow-hidden transform transition-all animate-in fade-in zoom-in duration-200">
+            <div className={`p-4 flex items-center justify-between text-white ${
+              modalMessage.type === 'success' ? 'bg-emerald-600' :
+              modalMessage.type === 'error' ? 'bg-rose-600' : 'bg-indigo-600'
+            }`}>
+              <h3 className="font-bold text-lg flex items-center gap-2">
+                {modalMessage.type === 'success' && <CheckCircle size={20} />}
+                {modalMessage.type === 'error' && <XCircle size={20} />}
+                {modalMessage.title}
+              </h3>
+              <button onClick={closeModal} className="text-white hover:opacity-80 transition">
+                <X size={20} />
+              </button>
+            </div>
+            <div className="p-6">
+              <p className="text-slate-600 text-base leading-relaxed">{modalMessage.content}</p>
+              <div className="mt-6 flex justify-end">
+                <button 
+                  onClick={closeModal}
+                  className={`px-5 py-2 rounded-lg font-medium text-white transition ${
+                    modalMessage.type === 'success' ? 'bg-emerald-600 hover:bg-emerald-700' :
+                    modalMessage.type === 'error' ? 'bg-rose-600 hover:bg-rose-700' : 'bg-indigo-600 hover:bg-indigo-700'
+                  }`}
+                >
+                  Đồng ý
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* EDIT MODAL FOR ADMIN */}
+      {editingAttempt && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 transition-opacity">
+          <div className="bg-white rounded-xl shadow-2xl max-w-lg w-full overflow-hidden">
+            <div className="p-4 bg-indigo-800 text-white flex justify-between items-center">
+              <h3 className="font-bold text-lg">Sửa đổi thông tin bài kiểm tra</h3>
+              <button onClick={() => setEditingAttempt(null)}><X size={20} /></button>
+            </div>
+            <form onSubmit={saveEditedAttempt} className="p-6 space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Mã số học sinh</label>
+                <input 
+                  type="text" 
+                  value={editingAttempt.studentId}
+                  onChange={(e) => setEditingAttempt({ ...editingAttempt, studentId: e.target.value.toUpperCase() })}
+                  className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-600 focus:outline-none font-bold"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Tên bài kiểm tra</label>
+                <input 
+                  type="text" 
+                  value={editingAttempt.quizTitle}
+                  onChange={(e) => setEditingAttempt({ ...editingAttempt, quizTitle: e.target.value })}
+                  className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-600 focus:outline-none"
+                  required
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Điểm số đạt được (0-100)</label>
+                  <input 
+                    type="number" 
+                    min="0"
+                    max="100"
+                    value={editingAttempt.score}
+                    onChange={(e) => setEditingAttempt({ ...editingAttempt, score: parseInt(e.target.value) || 0 })}
+                    className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-600 focus:outline-none"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Độ khó / Loại hình</label>
+                  <select 
+                    value={editingAttempt.difficulty}
+                    onChange={(e) => setEditingAttempt({ ...editingAttempt, difficulty: e.target.value })}
+                    className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-600 focus:outline-none bg-white"
+                  >
+                    <option value="Cơ bản">Cơ bản</option>
+                    <option value="Định kỳ">Định kỳ</option>
+                    <option value="Nâng cao">Nâng cao</option>
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Thời gian nộp bài</label>
+                <input 
+                  type="text" 
+                  value={editingAttempt.date}
+                  onChange={(e) => setEditingAttempt({ ...editingAttempt, date: e.target.value })}
+                  className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-600 focus:outline-none font-mono"
+                  required
+                />
+              </div>
+              <div className="pt-4 flex justify-end gap-2">
+                <button 
+                  type="button" 
+                  onClick={() => setEditingAttempt(null)}
+                  className="px-4 py-2 border rounded-lg text-slate-600 hover:bg-slate-100 text-sm font-semibold"
+                >
+                  Hủy bỏ
+                </button>
+                <button 
+                  type="submit"
+                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-bold"
+                >
+                  Lưu thay đổi
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ADD MANUAL RECORD MODAL */}
+      {isAddingAttempt && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 transition-opacity">
+          <div className="bg-white rounded-xl shadow-2xl max-w-lg w-full overflow-hidden">
+            <div className="p-4 bg-emerald-800 text-white flex justify-between items-center">
+              <h3 className="font-bold text-lg flex items-center gap-2"><Plus size={20} /> Thêm điểm thủ công học sinh</h3>
+              <button onClick={() => setIsAddingAttempt(false)}><X size={20} /></button>
+            </div>
+            <form onSubmit={handleCreateManualRecord} className="p-6 space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Nhập Mã số học sinh</label>
+                <input 
+                  type="text" 
+                  placeholder="Ví dụ: ECO002"
+                  value={newManualRecord.studentId}
+                  onChange={(e) => setNewManualRecord({ ...newManualRecord, studentId: e.target.value })}
+                  className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-600 focus:outline-none font-bold"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Tên bài kiểm tra</label>
+                <select 
+                  value={newManualRecord.quizTitle}
+                  onChange={(e) => setNewManualRecord({ ...newManualRecord, quizTitle: e.target.value })}
+                  className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-600 focus:outline-none bg-white"
+                >
+                  {WEEKLY_DATABASE.map(week => (
+                    <option key={week.id} value={week.title}>{week.title}</option>
+                  ))}
+                  <option value="Chương 1: Tập hợp các số tự nhiên">Chương 1: Tập hợp các số tự nhiên</option>
+                  <option value="Chương 2: Tính chất chia hết trong tập hợp số tự nhiên">Chương 2: Tính chất chia hết</option>
+                  <option value="Chương 3: Số nguyên">Chương 3: Số nguyên</option>
+                  <option value="Chuyên đề 1: Chứng minh chia hết nâng cao">Chuyên đề 1: Chứng minh chia hết nâng cao</option>
+                </select>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Điểm thi (0-100)</label>
+                  <input 
+                    type="number" 
+                    min="0"
+                    max="100"
+                    placeholder="100"
+                    value={newManualRecord.score}
+                    onChange={(e) => setNewManualRecord({ ...newManualRecord, score: e.target.value })}
+                    className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-600 focus:outline-none"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Độ khó / Loại hình</label>
+                  <select 
+                    value={newManualRecord.difficulty}
+                    onChange={(e) => setNewManualRecord({ ...newManualRecord, difficulty: e.target.value })}
+                    className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-600 focus:outline-none bg-white"
+                  >
+                    <option value="Cơ bản">Cơ bản</option>
+                    <option value="Định kỳ">Định kỳ</option>
+                    <option value="Nâng cao">Nâng cao</option>
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-slate-500 uppercase mb-1">Thời gian nhập điểm (Để trống nếu lấy hôm nay)</label>
+                <input 
+                  type="text" 
+                  placeholder="Ví dụ: 2026-06-20 13:30"
+                  value={newManualRecord.date}
+                  onChange={(e) => setNewManualRecord({ ...newManualRecord, date: e.target.value })}
+                  className="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-600 focus:outline-none font-mono"
+                />
+              </div>
+              <div className="pt-4 flex justify-end gap-2">
+                <button 
+                  type="button" 
+                  onClick={() => setIsAddingAttempt(false)}
+                  className="px-4 py-2 border rounded-lg text-slate-600 hover:bg-slate-100 text-sm font-semibold"
+                >
+                  Hủy bỏ
+                </button>
+                <button 
+                  type="submit"
+                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-sm font-bold"
+                >
+                  Xác nhận thêm
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* HEADER BAR FOR MOBILE & TOP CONTROLS */}
+      <header className="bg-indigo-900 text-white shadow-md sticky top-0 z-40">
+        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <button 
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="lg:hidden p-2 hover:bg-indigo-800 rounded-lg transition"
+            >
+              {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+            <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigateTo('home')}>
+              <span className="bg-amber-500 text-indigo-900 p-2 rounded-lg font-black text-xl tracking-tight">KNTT</span>
+              <div>
+                <h1 className="font-bold text-base md:text-lg leading-tight">Toán Lớp 6</h1>
+                <p className="text-xs text-indigo-200">Kết Nối Tri Thức Với Cuộc Sống</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            {studentId ? (
+              <div className="flex items-center gap-2 bg-indigo-850 border border-indigo-700 px-3 py-1.5 rounded-full text-sm">
+                <User size={16} className="text-amber-400" />
+                <span className="font-semibold text-amber-300">Học sinh: {studentId}</span>
+                <button 
+                  onClick={handleLogout}
+                  className="ml-2 p-1 bg-indigo-800 hover:bg-rose-700 text-white rounded-full transition"
+                  title="Đăng xuất"
+                >
+                  <LogOut size={14} />
+                </button>
+              </div>
+            ) : (
+              <div className="hidden md:flex items-center gap-2 bg-indigo-950 p-1 rounded-lg border border-indigo-800">
+                <input 
+                  type="text" 
+                  placeholder="Nhập Tên tài khoản (Ví dụ: ECO002)" 
+                  value={studentInput}
+                  onChange={(e) => setStudentInput(e.target.value)}
+                  className="bg-transparent px-3 py-1 text-sm text-white focus:outline-none w-52 placeholder-indigo-300"
+                />
+                <button 
+                  onClick={handleStudentLogin}
+                  className="bg-amber-500 hover:bg-amber-600 text-indigo-900 font-bold px-3 py-1.5 rounded text-xs transition flex items-center gap-1"
+                >
+                  <LogIn size={12} /> Đăng Nhập
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </header>
+
+      <div className="flex-1 max-w-7xl w-full mx-auto flex flex-col lg:flex-row">
+        
+        {/* NAV BAR SIDEBAR */}
+        <aside className={`
+          lg:w-64 bg-white border-r border-slate-200 p-4 shrink-0 transition-all duration-200
+          ${mobileMenuOpen ? 'fixed inset-y-0 left-0 z-50 w-64 block shadow-xl mt-14' : 'hidden lg:block'}
+        `}>
+          <div className="space-y-6">
+            <div>
+              <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Không gian học</p>
+              <nav className="space-y-1">
+                <button 
+                  onClick={() => navigateTo('home')}
+                  className={`w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition ${
+                    currentPage === 'home' ? 'bg-indigo-50 text-indigo-700' : 'text-slate-600 hover:bg-slate-50'
+                  }`}
+                >
+                  <BookOpen size={18} />
+                  <span>Trang chủ chính</span>
+                </button>
+                <button 
+                  onClick={() => navigateTo('lessons')}
+                  className={`w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition ${
+                    currentPage === 'lessons' ? 'bg-indigo-50 text-indigo-700' : 'text-slate-600 hover:bg-slate-50'
+                  }`}
+                >
+                  <BookMarked size={18} />
+                  <span>Chương trình SGK</span>
+                </button>
+                <button 
+                  onClick={() => navigateTo('tests')}
+                  className={`w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition ${
+                    currentPage === 'tests' ? 'bg-indigo-50 text-indigo-700' : 'text-slate-600 hover:bg-slate-50'
+                  }`}
+                >
+                  <Award size={18} />
+                  <span>Kiểm tra 35 tuần học</span>
+                </button>
+                <button 
+                  onClick={() => navigateTo('advanced')}
+                  className={`w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition ${
+                    currentPage === 'advanced' ? 'bg-indigo-50 text-indigo-700' : 'text-slate-600 hover:bg-slate-50'
+                  }`}
+                >
+                  <Flame size={18} className="text-orange-500" />
+                  <span>Toán nâng cao bồi dưỡng</span>
+                </button>
+              </nav>
+            </div>
+
+            <div>
+              <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Giải trí trí tuệ</p>
+              <nav className="space-y-1">
+                <button 
+                  onClick={() => navigateTo('mentalmath')}
+                  className={`w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition ${
+                    currentPage === 'mentalmath' ? 'bg-indigo-50 text-indigo-700' : 'text-slate-600 hover:bg-slate-50'
+                  }`}
+                >
+                  <Sparkles size={18} className="text-yellow-500 animate-pulse" />
+                  <span>Đấu trường tính nhanh</span>
+                </button>
+              </nav>
+            </div>
+
+            <div className="pt-6 border-t border-slate-150">
+              <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Hệ thống</p>
+              <button 
+                onClick={() => navigateTo('admin')}
+                className={`w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition ${
+                  currentPage === 'admin' ? 'bg-indigo-50 text-indigo-700' : 'text-slate-600 hover:bg-slate-50'
+                }`}
+              >
+                <Settings size={18} />
+                <span>Bảng điều khiển Admin</span>
+              </button>
+            </div>
+          </div>
+        </aside>
+
+        {/* MAIN BODY OF THE APP */}
+        <main className="flex-1 p-4 md:p-8 overflow-x-hidden">
+          
+          {/* TRANG CHỦ / HOME PAGE */}
+          {currentPage === 'home' && (
+            <div className="space-y-6">
+              
+              {/* BANNER CHÀO MỪNG */}
+              <div className="bg-gradient-to-r from-indigo-800 to-indigo-600 rounded-2xl p-6 md:p-8 text-white shadow-lg relative overflow-hidden">
+                <div className="absolute right-0 bottom-0 opacity-10 pointer-events-none transform translate-y-1/4 translate-x-1/4">
+                  <BookOpen size={300} />
+                </div>
+                <div className="max-w-2xl space-y-4">
+                  <span className="bg-indigo-500 bg-opacity-40 text-amber-300 font-bold px-3 py-1 rounded-full text-xs uppercase tracking-widest">Toán Lớp 6</span>
+                  <h2 className="text-2xl md:text-4xl font-extrabold tracking-tight">Học hiệu quả - Thi bứt phá</h2>
+                  <p className="text-indigo-100 text-sm md:text-base">
+                    Hệ thống ôn luyện trực tuyến bám sát phân phối chương trình của Bộ Sách <strong>Kết nối tri thức với cuộc sống</strong> gồm đủ 35 tuần học, bồi dưỡng học sinh giỏi tư duy cao.
+                  </p>
+                  
+                  {/* FORM ĐĂNG NHẬP NẾU CHƯA CÓ STUDENT ID */}
+                  {!studentId ? (
+                    <div className="bg-white p-4 rounded-xl shadow-md text-slate-800 max-w-md mt-6">
+                      <p className="font-bold text-sm mb-2 text-indigo-950">Bắt đầu ngay bằng cách Đăng nhập Mã học sinh:</p>
+                      <form onSubmit={handleStudentLogin} className="flex flex-col sm:flex-row gap-2">
+                        <input 
+                          type="text" 
+                          placeholder="Ví dụ: ECO002"
+                          value={studentInput}
+                          onChange={(e) => setStudentInput(e.target.value)}
+                          className="flex-1 bg-slate-100 px-3 py-2 rounded-lg text-sm font-semibold border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                        />
+                        <button 
+                          type="submit" 
+                          className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-4 py-2 rounded-lg text-sm transition"
+                        >
+                          Vào Học Ngay
+                        </button>
+                      </form>
+                      <p className="text-xs text-slate-400 mt-2">Mã học sinh giúp lưu lại tiến trình và kết quả làm bài tập của bạn.</p>
+                    </div>
+                  ) : (
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      <button 
+                        onClick={() => navigateTo('tests')}
+                        className="bg-amber-500 hover:bg-amber-600 text-indigo-950 font-bold px-5 py-2 rounded-lg text-sm shadow transition"
+                      >
+                        Bắt đầu làm bài 35 tuần
+                      </button>
+                      <button 
+                        onClick={() => navigateTo('mentalmath')}
+                        className="bg-indigo-550 border border-indigo-400 hover:bg-indigo-500 text-white font-semibold px-5 py-2 rounded-lg text-sm transition"
+                      >
+                        Chơi Toán Trí Tuệ
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* KHU VỰC THỐNG KÊ HOẠT ĐỘNG NHANH */}
+              {studentId && (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="bg-white p-5 rounded-xl shadow-sm border border-slate-100 flex items-center justify-between">
+                    <div>
+                      <p className="text-xs font-semibold text-slate-400 uppercase">Học sinh tích cực</p>
+                      <h4 className="text-xl font-bold mt-1 text-slate-800">{studentId}</h4>
+                    </div>
+                    <div className="bg-indigo-50 p-3 rounded-full text-indigo-600">
+                      <User size={24} />
+                    </div>
+                  </div>
+                  <div className="bg-white p-5 rounded-xl shadow-sm border border-slate-100 flex items-center justify-between">
+                    <div>
+                      <p className="text-xs font-semibold text-slate-400 uppercase">Tiến độ 35 Tuần Học</p>
+                      <h4 className="text-xl font-bold mt-1 text-slate-800">
+                        Đã đạt 100đ: {completedWeeksCount} / 35 tuần
+                      </h4>
+                    </div>
+                    <div className="bg-emerald-50 p-3 rounded-full text-emerald-600">
+                      <CheckCircle size={24} />
+                    </div>
+                  </div>
+                  <div className="bg-white p-5 rounded-xl shadow-sm border border-slate-100 flex items-center justify-between">
+                    <div>
+                      <p className="text-xs font-semibold text-slate-400 uppercase">Điểm kỷ lục Tính Nhanh</p>
+                      <h4 className="text-xl font-bold mt-1 text-slate-800">{gameHighscore} điểm</h4>
+                    </div>
+                    <div className="bg-amber-50 p-3 rounded-full text-amber-600">
+                      <Flame size={24} />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* TỔNG QUAN TIẾN ĐỘ CHƯƠNG TRÌNH */}
+              <div>
+                <h3 className="text-lg font-bold text-slate-800 mb-4">Lộ trình học theo sách Kết nối tri thức</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <div className="bg-white rounded-xl shadow-sm border border-slate-150 overflow-hidden hover:shadow-md transition">
+                    <div className="p-5">
+                      <div className="flex justify-between items-start mb-3">
+                        <span className="bg-blue-100 text-blue-800 text-xs font-bold px-2.5 py-1 rounded-full">Số Học</span>
+                        <span className="text-xs text-slate-400">Tập 1 & 2</span>
+                      </div>
+                      <h4 className="font-bold text-slate-800 mb-1">Toán Số & Đại Số</h4>
+                      <p className="text-slate-500 text-xs leading-relaxed mb-4">Tìm hiểu về thế giới tập hợp số tự nhiên, tính chất chia hết, ước và bội, số nguyên, phân số và số thập phân.</p>
+                      <button 
+                        onClick={() => navigateTo('lessons')}
+                        className="text-indigo-600 hover:text-indigo-800 text-sm font-bold flex items-center gap-1 transition"
+                      >
+                        Vào xem chương học <ChevronRight size={16} />
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="bg-white rounded-xl shadow-sm border border-slate-150 overflow-hidden hover:shadow-md transition">
+                    <div className="p-5">
+                      <div className="flex justify-between items-start mb-3">
+                        <span className="bg-purple-100 text-purple-800 text-xs font-bold px-2.5 py-1 rounded-full">Hình Học</span>
+                        <span className="text-xs text-slate-400">Tập 1 & 2</span>
+                      </div>
+                      <h4 className="font-bold text-slate-800 mb-1">Hình học trực quan & Phẳng</h4>
+                      <p className="text-slate-500 text-xs leading-relaxed mb-4">Thực hành quan sát các hình phẳng cơ bản, tính chu vi, diện tích, đối xứng trục, tâm và các hình phẳng cơ bản điểm, đoạn thẳng, góc.</p>
+                      <button 
+                        onClick={() => navigateTo('lessons')}
+                        className="text-indigo-600 hover:text-indigo-800 text-sm font-bold flex items-center gap-1 transition"
+                      >
+                        Vào xem chương học <ChevronRight size={16} />
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="bg-white rounded-xl shadow-sm border border-slate-150 overflow-hidden hover:shadow-md transition">
+                    <div className="p-5">
+                      <div className="flex justify-between items-start mb-3">
+                        <span className="bg-orange-100 text-orange-800 text-xs font-bold px-2.5 py-1 rounded-full">Nâng Cao</span>
+                        <span className="text-xs text-slate-400">Ôn Thi HSG</span>
+                      </div>
+                      <h4 className="font-bold text-slate-800 mb-1">Bồi dưỡng Toán tư duy</h4>
+                      <p className="text-slate-500 text-xs leading-relaxed mb-4">Các chuyên đề toán nâng cao chọn lọc bám sát chương trình, rèn luyện tư duy logic, lập luận phân tích sắc bén.</p>
+                      <button 
+                        onClick={() => navigateTo('advanced')}
+                        className="text-indigo-600 hover:text-indigo-800 text-sm font-bold flex items-center gap-1 transition"
+                      >
+                        Thử tài thử thách <ChevronRight size={16} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          )}
+
+          {/* TRANG CHƯƠNG TRÌNH SGK */}
+          {currentPage === 'lessons' && (
+            <div className="space-y-6">
+              <div className="border-b border-slate-200 pb-4">
+                <h2 className="text-2xl font-bold text-slate-800">Chương trình Sách Giáo Khoa Toán 6</h2>
+                <p className="text-sm text-slate-500">Các chương học được thiết kế chuẩn xác theo khung chương trình Kết nối tri thức.</p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {SGK_DATABASE.lessons.map((lesson) => (
+                  <div key={lesson.id} className="bg-white rounded-xl border border-slate-200 shadow-sm p-6 flex flex-col justify-between">
+                    <div>
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="bg-indigo-50 text-indigo-700 text-xs font-semibold px-2.5 py-1 rounded">Số học & Hình học</span>
+                        <span className="text-xs text-slate-400">{lesson.questions.length} câu trắc nghiệm</span>
+                      </div>
+                      <h3 className="text-lg font-bold text-slate-800 mb-2">{lesson.title}</h3>
+                      <p className="text-sm text-slate-500 leading-relaxed mb-4">{lesson.desc}</p>
+                    </div>
+                    <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
+                      <span className="text-xs font-bold text-slate-400 uppercase">Cơ bản SGK</span>
+                      <button 
+                        onClick={() => startNewQuiz(lesson)}
+                        className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-4 py-2 rounded-lg transition"
+                      >
+                        Bắt đầu ôn tập
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* TRANG KIỂM TRA ĐỊNH KỲ 35 TUẦN HỌC */}
+          {currentPage === 'tests' && (
+            <div className="space-y-6">
+              
+              {/* Thanh tiêu đề và tiến độ */}
+              <div className="bg-white rounded-2xl border p-6 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div className="space-y-1">
+                  <h2 className="text-2xl font-bold text-slate-800">Kiểm Tra Ôn Tập Đầy Đủ 35 Tuần SGK</h2>
+                  <p className="text-sm text-slate-500">Danh sách bài tập ôn tập, tự kiểm tra định kỳ phân phối theo chuẩn 35 tuần học.</p>
+                </div>
+                {studentId && (
+                  <div className="bg-indigo-550 bg-opacity-10 border border-indigo-200 rounded-xl px-4 py-3 min-w-[200px]">
+                    <div className="flex justify-between items-center text-xs text-slate-600 mb-1 font-semibold">
+                      <span>Tuần đã hoàn thành (100 điểm)</span>
+                      <span className="text-indigo-700">{completedWeeksCount} / 35</span>
+                    </div>
+                    <div className="w-full bg-slate-200 rounded-full h-2">
+                      <div 
+                        className="bg-indigo-600 h-2 rounded-full transition-all duration-500" 
+                        style={{ width: `${(completedWeeksCount / 35) * 100}%` }}
+                      ></div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Bộ lọc tìm kiếm & Học kỳ */}
+              <div className="flex flex-col md:flex-row gap-3 items-center justify-between">
+                <div className="flex gap-2 w-full md:w-auto">
+                  <button 
+                    onClick={() => setSelectedSemester('all')}
+                    className={`flex-1 md:flex-none px-4 py-2 rounded-lg text-xs font-bold transition ${
+                      selectedSemester === 'all' ? 'bg-indigo-600 text-white' : 'bg-white border text-slate-600 hover:bg-slate-50'
+                    }`}
+                  >
+                    Tất cả
+                  </button>
+                  <button 
+                    onClick={() => setSelectedSemester('s1')}
+                    className={`flex-1 md:flex-none px-4 py-2 rounded-lg text-xs font-bold transition ${
+                      selectedSemester === 's1' ? 'bg-indigo-600 text-white' : 'bg-white border text-slate-600 hover:bg-slate-50'
+                    }`}
+                  >
+                    Học kỳ I (Tuần 1 - 18)
+                  </button>
+                  <button 
+                    onClick={() => setSelectedSemester('s2')}
+                    className={`flex-1 md:flex-none px-4 py-2 rounded-lg text-xs font-bold transition ${
+                      selectedSemester === 's2' ? 'bg-indigo-600 text-white' : 'bg-white border text-slate-600 hover:bg-slate-50'
+                    }`}
+                  >
+                    Học kỳ II (Tuần 19 - 35)
+                  </button>
+                </div>
+
+                <div className="relative w-full md:w-72">
+                  <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">
+                    <Search size={16} />
+                  </span>
+                  <input 
+                    type="text" 
+                    placeholder="Tìm kiếm tuần học..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full pl-9 pr-4 py-2 text-sm bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                </div>
+              </div>
+
+              {/* Grid 35 Tuần */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredWeeks.map((test) => {
+                  // Tìm điểm số cao nhất của học sinh cho tuần này
+                  const weekAttempt = attempts
+                    .filter(a => a.studentId === studentId && a.quizTitle === test.title)
+                    .sort((a, b) => b.score - a.score)[0];
+
+                  return (
+                    <div key={test.id} className="bg-white rounded-xl border border-slate-200 shadow-sm p-5 flex flex-col justify-between hover:shadow-md transition">
+                      <div>
+                        <div className="flex justify-between items-center mb-3">
+                          <span className={`text-xs font-bold px-2 py-1 rounded ${
+                            test.semester === 1 ? 'bg-blue-50 text-blue-700' : 'bg-purple-50 text-purple-700'
+                          }`}>
+                            {test.semester === 1 ? 'Học kỳ I' : 'Học kỳ II'}
+                          </span>
+                          
+                          {/* Trạng thái bài làm */}
+                          {weekAttempt ? (
+                            <span className={`text-xs font-bold px-2 py-0.5 rounded ${
+                              weekAttempt.score === 100 ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
+                            }`}>
+                              {weekAttempt.score === 100 ? 'Hoàn hảo 100đ' : `Đạt ${weekAttempt.score}đ`}
+                            </span>
+                          ) : (
+                            <span className="text-xs text-slate-400 italic">Chưa thực hiện</span>
+                          )}
+                        </div>
+                        <h3 className="text-base font-bold text-slate-800 mb-2 leading-snug">{test.title}</h3>
+                        <p className="text-xs text-slate-500 leading-relaxed mb-4">{test.desc}</p>
+                      </div>
+                      <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+                        <span className="text-slate-400 font-semibold">{test.questions.length} Câu trắc nghiệm</span>
+                        <button 
+                          onClick={() => startNewQuiz(test)}
+                          className={`font-bold px-3 py-1.5 rounded-lg transition ${
+                            weekAttempt && weekAttempt.score === 100
+                              ? 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+                              : 'bg-indigo-600 hover:bg-indigo-700 text-white'
+                          }`}
+                        >
+                          {weekAttempt ? 'Thi lại' : 'Bắt đầu làm'}
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+
+                {filteredWeeks.length === 0 && (
+                  <div className="col-span-full bg-white border rounded-xl p-8 text-center text-slate-400">
+                    Không tìm thấy bài học phù hợp với yêu cầu tìm kiếm.
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* TRANG TOÁN NÂNG CAO */}
+          {currentPage === 'advanced' && (
+            <div className="space-y-6">
+              <div className="border-b border-slate-200 pb-4">
+                <div className="flex items-center gap-2">
+                  <Flame className="text-orange-500 animate-bounce" size={24} />
+                  <h2 className="text-2xl font-bold text-slate-800">Cổng Toán Nâng Cao & Ôn Luyện Đỉnh Cao</h2>
+                </div>
+                <p className="text-sm text-slate-500">Bồi dưỡng các phương pháp toán tư duy sâu rộng, ôn thi các kỳ thi Học sinh giỏi các cấp.</p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {SGK_DATABASE.advanced.map((adv) => (
+                  <div key={adv.id} className="bg-white rounded-xl border border-orange-200 shadow-sm p-6 flex flex-col justify-between relative overflow-hidden">
+                    <div className="absolute right-0 top-0 bg-orange-500 text-white font-extrabold text-xs px-3 py-1 uppercase rounded-bl-lg">
+                      HSG VIP
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="bg-orange-50 text-orange-700 text-xs font-semibold px-2.5 py-1 rounded">Nâng cao</span>
+                        <span className="text-xs text-slate-400">{adv.questions.length} câu thử thách</span>
+                      </div>
+                      <h3 className="text-lg font-bold text-slate-800 mb-2">{adv.title}</h3>
+                      <p className="text-sm text-slate-500 leading-relaxed mb-4">{adv.desc}</p>
+                    </div>
+                    <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
+                      <span className="text-xs font-bold text-orange-500 uppercase">Tư Duy Mức Độ Cao</span>
+                      <button 
+                        onClick={() => startNewQuiz(adv)}
+                        className="bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold px-4 py-2 rounded-lg transition"
+                      >
+                        Nhận thử thách
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* MÀN HÌNH CHƠI QUIZ (QUIZ PLAYER) */}
+          {currentPage === 'quiz-play' && activeQuiz && (
+            <div className="max-w-3xl mx-auto space-y-6">
+              <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                  <h3 className="text-lg font-bold text-indigo-900">{activeQuiz.title}</h3>
+                  <p className="text-xs text-slate-500">Người thực hiện: <strong className="text-slate-700">{studentId}</strong></p>
+                </div>
+                <div className="flex items-center gap-2 text-sm font-semibold bg-indigo-50 text-indigo-700 px-3 py-1.5 rounded-lg">
+                  <Clock size={16} />
+                  <span>Cố gắng đạt 100 điểm!</span>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-2xl border border-slate-200 shadow-md overflow-hidden">
+                <div className="bg-slate-100 h-2 w-full flex">
+                  {activeQuiz.questions.map((_, idx) => (
+                    <div 
+                      key={idx}
+                      className={`h-full flex-1 transition ${
+                        idx === currentQuestionIdx ? 'bg-indigo-600' :
+                        answers[idx] !== undefined ? 'bg-indigo-300' : 'bg-slate-200'
+                      }`}
+                    />
+                  ))}
+                </div>
+
+                <div className="p-6 md:p-8 space-y-6">
+                  <div>
+                    <span className="text-xs font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded uppercase tracking-wider">
+                      Câu {currentQuestionIdx + 1} / {activeQuiz.questions.length}
+                    </span>
+                    <h4 className="text-lg font-semibold mt-3 text-slate-800 leading-relaxed">
+                      {activeQuiz.questions[currentQuestionIdx].q}
+                    </h4>
+                  </div>
+
+                  <div className="space-y-3">
+                    {activeQuiz.questions[currentQuestionIdx].options.map((option, optIdx) => {
+                      const isSelected = answers[currentQuestionIdx] === optIdx;
+                      const isCorrect = activeQuiz.questions[currentQuestionIdx].correct === optIdx;
+                      
+                      let optionStyle = "border-slate-200 hover:bg-slate-50 hover:border-slate-300";
+                      if (isSelected) optionStyle = "border-indigo-600 bg-indigo-50 bg-opacity-70 text-indigo-950 font-medium";
+                      
+                      if (quizFinished) {
+                        if (isCorrect) {
+                          optionStyle = "border-emerald-600 bg-emerald-50 text-emerald-950 font-semibold";
+                        } else if (isSelected) {
+                          optionStyle = "border-rose-600 bg-rose-50 text-rose-950";
+                        } else {
+                          optionStyle = "border-slate-200 opacity-60";
+                        }
+                      }
+
+                      return (
+                        <button
+                          key={optIdx}
+                          disabled={quizFinished}
+                          onClick={() => handleSelectOption(optIdx)}
+                          className={`w-full text-left p-4 rounded-xl border-2 transition flex items-center justify-between ${optionStyle}`}
+                        >
+                          <span>{option}</span>
+                          {quizFinished && isCorrect && <CheckCircle size={18} className="text-emerald-600" />}
+                          {quizFinished && isSelected && !isCorrect && <XCircle size={18} className="text-rose-600" />}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {quizFinished && (
+                    <div className="bg-indigo-50 bg-opacity-70 border-l-4 border-indigo-500 p-4 rounded-r-xl space-y-2 animate-in slide-in-from-left duration-250">
+                      <h5 className="font-bold text-indigo-900 text-sm flex items-center gap-1">
+                        💡 Lời giải hướng dẫn bài tập:
+                      </h5>
+                      <p className="text-slate-600 text-sm leading-relaxed">
+                        {activeQuiz.questions[currentQuestionIdx].explain}
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                <div className="bg-slate-50 px-6 py-4 border-t border-slate-100 flex items-center justify-between">
+                  <div className="flex gap-2">
+                    <button
+                      disabled={currentQuestionIdx === 0}
+                      onClick={prevQuestion}
+                      className="px-4 py-2 border border-slate-300 text-slate-700 font-bold rounded-lg text-xs hover:bg-slate-100 disabled:opacity-40 transition"
+                    >
+                      Quay lại
+                    </button>
+                    <button
+                      disabled={currentQuestionIdx === activeQuiz.questions.length - 1}
+                      onClick={nextQuestion}
+                      className="px-4 py-2 border border-slate-300 text-slate-700 font-bold rounded-lg text-xs hover:bg-slate-100 disabled:opacity-40 transition"
+                    >
+                      Tiếp theo
+                    </button>
+                  </div>
+
+                  {!quizFinished ? (
+                    <button
+                      onClick={submitQuiz}
+                      className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-5 py-2 rounded-lg text-xs transition"
+                    >
+                      Nộp bài ngay
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => navigateTo('tests')}
+                      className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-5 py-2 rounded-lg text-xs transition"
+                    >
+                      Quay lại danh sách tuần
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ĐẤU TRƯỜNG TÍNH NHANH */}
+          {currentPage === 'mentalmath' && (
+            <div className="max-w-xl mx-auto">
+              <div className="bg-white rounded-2xl border border-slate-200 shadow-md overflow-hidden">
+                <div className="bg-gradient-to-r from-amber-500 to-orange-500 p-6 text-white text-center">
+                  <h2 className="text-2xl font-black flex items-center justify-center gap-2">
+                    <Sparkles className="animate-spin" /> ĐẤU TRƯỜNG PHẢN XẠ SỐ HỌC
+                  </h2>
+                  <p className="text-xs text-amber-100 mt-1">Phản xạ nhanh giúp rèn luyện khả năng tính nhẩm chính xác cho học sinh lớp 6</p>
+                </div>
+
+                <div className="p-6 md:p-8 text-center space-y-6">
+                  {!gameActive ? (
+                    <div className="space-y-6 py-8">
+                      <div className="flex justify-center gap-6 text-slate-600">
+                        <div>
+                          <p className="text-xs font-semibold uppercase text-slate-400">Đạt điểm cao nhất</p>
+                          <p className="text-2xl font-black text-amber-500">{gameHighscore} điểm</p>
+                        </div>
+                      </div>
+                      
+                      <div className="bg-slate-50 p-4 rounded-xl text-slate-500 text-sm leading-relaxed max-w-sm mx-auto text-left">
+                        <strong>Luật chơi cực kỳ đơn giản:</strong>
+                        <ul className="list-disc ml-5 mt-2 space-y-1">
+                          <li>Trả lời đúng cộng 10 điểm.</li>
+                          <li>Mỗi câu trả lời đúng sẽ cộng thêm 3 giây.</li>
+                          <li>Trả lời sai hệ thống sẽ trừ trực tiếp 1 giây!</li>
+                        </ul>
+                      </div>
+
+                      <button
+                        onClick={startGame}
+                        className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-8 py-3 rounded-xl shadow-lg hover:shadow-indigo-300 transition inline-flex items-center gap-2"
+                      >
+                        <Play size={18} /> BẮT ĐẦU CHƠI
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="space-y-6">
+                      <div className="flex items-center justify-between bg-slate-50 p-3 rounded-lg border">
+                        <div className="flex items-center gap-1.5 text-slate-600 text-sm">
+                          <Clock size={16} className="text-orange-500 animate-pulse" />
+                          <span>Thời gian: <strong className="text-lg text-slate-800">{timeLeft}s</strong></span>
+                        </div>
+                        <div className="text-sm font-bold text-slate-600">
+                          Điểm số: <span className="text-xl font-black text-indigo-600">{gameScore}</span>
+                        </div>
+                      </div>
+
+                      <div className="bg-indigo-50 border border-indigo-100 py-8 rounded-2xl">
+                        <p className="text-4xl font-extrabold text-indigo-900 tracking-wider">
+                          {num1} {operator === '*' ? '×' : operator} {num2} = ?
+                        </p>
+                      </div>
+
+                      <form onSubmit={handleGameSubmit} className="flex gap-2 max-w-sm mx-auto">
+                        <input
+                          type="number"
+                          autoFocus
+                          placeholder="Đáp số của bạn..."
+                          value={gameAnsInput}
+                          onChange={(e) => setGameAnsInput(e.target.value)}
+                          className="flex-1 bg-slate-100 border-2 border-indigo-200 text-center text-lg font-bold py-2.5 rounded-xl focus:border-indigo-600 focus:outline-none"
+                        />
+                        <button
+                          type="submit"
+                          className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-6 rounded-xl transition"
+                        >
+                          Trả lời
+                        </button>
+                      </form>
+
+                      <button 
+                        type="button" 
+                        onClick={() => {
+                          setGameActive(false);
+                          showModal("Đã thoát trò chơi", "Rất mong được tiếp tục thi tài cùng bạn lần sau!", "info");
+                        }} 
+                        className="text-xs text-rose-600 font-bold hover:underline"
+                      >
+                        Hủy bỏ lượt chơi hiện tại
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* KHU VỰC QUẢN TRỊ ADMIN (MẬT KHẨU: 215151365) */}
+          {currentPage === 'admin' && (
+            <div className="max-w-6xl mx-auto space-y-6">
+              
+              {!isAdminLoggedIn ? (
+                <div className="bg-white rounded-2xl border border-slate-200 shadow-md p-6 md:p-8 max-w-md mx-auto text-center space-y-4">
+                  <div className="bg-slate-100 p-3.5 rounded-full inline-block text-slate-500">
+                    <Settings size={32} />
+                  </div>
+                  <h2 className="text-xl font-bold text-slate-800">Quyền Hạn Quản Trị Viên</h2>
+                  <p className="text-sm text-slate-500">Vui lòng điền đúng mật khẩu cấp cao để truy cập hệ thống quản trị dữ liệu.</p>
+                  
+                  <form onSubmit={handleAdminLogin} className="space-y-3">
+                    <input 
+                      type="password"
+                      placeholder="Mật khẩu Admin"
+                      value={adminPassword}
+                      onChange={(e) => setAdminPassword(e.target.value)}
+                      className="w-full bg-slate-50 border border-slate-300 px-4 py-2.5 rounded-lg text-center font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-600"
+                    />
+                    {adminError && <p className="text-xs text-rose-600 font-bold">{adminError}</p>}
+                    
+                    <button
+                      type="submit"
+                      className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-lg transition text-sm shadow"
+                    >
+                      Đăng Nhập Quản Trị
+                    </button>
+                  </form>
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 pb-4">
+                    <div>
+                      <h2 className="text-2xl font-bold text-slate-800">Bảng Quản Trị Hệ Thống Toán 6</h2>
+                      <p className="text-sm text-slate-500">Cho phép tùy chỉnh thông tin, thay đổi điểm số và quản lý tất cả học sinh học tập.</p>
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => setIsAddingAttempt(true)}
+                        className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-lg text-xs transition flex items-center gap-1.5 shadow"
+                      >
+                        <Plus size={14} /> Thêm điểm học sinh
+                      </button>
+                      <button
+                        onClick={() => setIsAdminLoggedIn(false)}
+                        className="bg-rose-100 text-rose-700 hover:bg-rose-200 font-bold px-4 py-2 rounded-lg text-xs transition"
+                      >
+                        Thoát Admin
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* THẺ TỔNG HỢP QUẢN TRỊ */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="bg-indigo-50 border border-indigo-100 rounded-xl p-4 text-center">
+                      <p className="text-xs font-semibold text-indigo-500 uppercase">Sĩ số học sinh hoạt động</p>
+                      <h4 className="text-3xl font-black text-indigo-900 mt-1">
+                        {new Set(attempts.map(a => a.studentId)).size} Học sinh
+                      </h4>
+                    </div>
+                    <div className="bg-emerald-50 border border-emerald-100 rounded-xl p-4 text-center">
+                      <p className="text-xs font-semibold text-emerald-500 uppercase">Tổng lượt nộp bài/Thi thử</p>
+                      <h4 className="text-3xl font-black text-emerald-900 mt-1">{attempts.length} lượt</h4>
+                    </div>
+                    <div className="bg-amber-50 border border-amber-100 rounded-xl p-4 text-center">
+                      <p className="text-xs font-semibold text-amber-500 uppercase">Điểm trung bình hệ thống</p>
+                      <h4 className="text-3xl font-black text-amber-900 mt-1">
+                        {attempts.length > 0 
+                          ? Math.round(attempts.reduce((acc, curr) => acc + curr.score, 0) / attempts.length)
+                          : 0
+                        } / 100
+                      </h4>
+                    </div>
+                  </div>
+
+                  {/* DANH SÁCH LỊCH SỬ KẾT QUẢ HỌC SINH */}
+                  <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                    <div className="p-5 border-b border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                      <h3 className="font-bold text-slate-800 text-base">Nhật ký & Quản lý điểm số học sinh</h3>
+                      <p className="text-xs text-slate-400">Ấn biểu tượng <b>Bút chì</b> để sửa thông tin hoặc <b>Thùng rác</b> để xóa lịch sử học sinh.</p>
+                    </div>
+
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left text-sm text-slate-600 border-collapse">
+                        <thead>
+                          <tr className="bg-slate-50 text-slate-500 font-semibold border-b border-slate-200">
+                            <th className="p-4">Thời gian</th>
+                            <th className="p-4">Mã số học sinh</th>
+                            <th className="p-4">Tên bài kiểm tra</th>
+                            <th className="p-4">Cấp độ</th>
+                            <th className="p-4 text-center">Kết quả</th>
+                            <th className="p-4 text-right">Hành động</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-150">
+                          {attempts.map((item) => (
+                            <tr key={item.id} className="hover:bg-slate-50 transition">
+                              <td className="p-4 font-mono text-xs">{item.date}</td>
+                              <td className="p-4 font-bold text-indigo-950">{item.studentId}</td>
+                              <td className="p-4 text-slate-800">{item.quizTitle}</td>
+                              <td className="p-4">
+                                <span className={`text-xs px-2 py-0.5 rounded font-medium ${
+                                  item.difficulty === 'Nâng cao' ? 'bg-orange-100 text-orange-800' :
+                                  item.difficulty === 'Định kỳ' ? 'bg-emerald-100 text-emerald-800' :
+                                  'bg-blue-100 text-blue-800'
+                                }`}>
+                                  {item.difficulty}
+                                </span>
+                              </td>
+                              <td className="p-4 text-center font-black text-base text-indigo-600">
+                                {item.score} / 100
+                              </td>
+                              <td className="p-4 text-right">
+                                <div className="flex justify-end gap-2">
+                                  <button 
+                                    onClick={() => startEditAttempt(item)}
+                                    className="p-1.5 text-indigo-600 hover:bg-indigo-50 rounded transition"
+                                    title="Sửa thông tin"
+                                  >
+                                    <Edit size={16} />
+                                  </button>
+                                  <button 
+                                    onClick={() => deleteStudentAttempt(item.id)}
+                                    className="p-1.5 text-rose-600 hover:bg-rose-50 rounded transition"
+                                    title="Xóa học sinh"
+                                  >
+                                    <Trash2 size={16} />
+                                  </button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
+                </div>
+              )}
+
+            </div>
+          )}
+
+        </main>
+      </div>
+
+      {/* FOOTER */}
+      <footer className="bg-slate-900 text-slate-400 text-center py-6 border-t border-slate-850 mt-12 text-xs">
+        <p className="font-bold text-slate-300">© 2026 Bản quyền thuộc về Bộ chương trình Toán 6 - Kết nối tri thức.</p>
+        <p className="mt-1.5 text-slate-500">Học trực tuyến hiệu quả cao, an toàn, hỗ trợ nâng cao tư duy phản xạ toán học tinh anh.</p>
+      </footer>
+
+    </div>
+  );
+}
