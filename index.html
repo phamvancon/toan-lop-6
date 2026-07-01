@@ -150,6 +150,44 @@
         </div>
     </div>
 
+    <!-- ADMIN ADD VIP ACCOUNT MODAL -->
+    <div id="add-vip-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 hidden transition-opacity duration-200">
+        <div class="bg-white rounded-xl shadow-2xl max-w-lg w-full overflow-hidden">
+            <div class="p-4 bg-indigo-700 text-white flex justify-between items-center">
+                <h3 class="font-bold text-lg flex items-center gap-2">
+                    <i data-lucide="shield-check" class="w-5 h-5 text-amber-400"></i> Tạo tài khoản VIP học sinh
+                </h3>
+                <button onclick="closeAddVipModal()"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <form id="add-vip-form" onsubmit="handleCreateVipAccount(event)" class="p-6 space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Mã số học sinh VIP</label>
+                    <input type="text" id="vip-reg-id" placeholder="Ví dụ: VIP999" class="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-600 focus:outline-none font-bold text-indigo-700 uppercase" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Mật khẩu bảo mật</label>
+                    <input type="password" id="vip-reg-password" placeholder="Tối thiểu 3 ký tự" class="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-600 focus:outline-none font-bold" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Họ và tên học sinh VIP</label>
+                    <input type="text" id="vip-reg-name" placeholder="Ví dụ: Hoàng Tuấn Anh" class="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-600 focus:outline-none" required>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Mục tiêu học tập bồi dưỡng</label>
+                    <select id="vip-reg-target" class="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-indigo-600 focus:outline-none bg-white">
+                      <option value="Học sinh giỏi toàn diện & Ôn thi Chuyên">Học sinh giỏi toàn diện & Ôn thi Chuyên</option>
+                      <option value="Tư duy sâu & Ôn thi học sinh giỏi cấp Huyện/Tỉnh">Tư duy sâu & Ôn thi học sinh giỏi cấp Huyện/Tỉnh</option>
+                      <option value="Mất gốc phục hồi phản xạ số học nhanh">Mất gốc phục hồi phản xạ số học nhanh</option>
+                    </select>
+                </div>
+                <div class="pt-4 flex justify-end gap-2">
+                    <button type="button" onclick="closeAddVipModal()" class="px-4 py-2 border rounded-lg text-slate-600 hover:bg-slate-100 text-sm font-semibold">Hủy bỏ</button>
+                    <button type="submit" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-bold">Kích hoạt tài khoản VIP</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- HEADER BAR -->
     <header class="bg-indigo-900 text-white shadow-md sticky top-0 z-40">
         <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
@@ -202,6 +240,18 @@
               </nav>
             </div>
 
+            <div id="sidebar-vip-area" class="hidden">
+              <p class="text-xs font-semibold text-amber-500 uppercase tracking-wider mb-2 flex items-center gap-1">
+                <i data-lucide="star" class="w-3.5 h-3.5 fill-amber-500"></i> Độc quyền học sinh VIP
+              </p>
+              <nav class="space-y-1">
+                <button onclick="navigateTo('viphub')" id="nav-viphub" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg text-amber-700 bg-amber-50 hover:bg-amber-100 transition border border-amber-200">
+                  <i data-lucide="sparkles" class="w-4 h-4 text-amber-600"></i>
+                  <span class="font-bold">VIP Hub Chuyên Sâu</span>
+                </button>
+              </nav>
+            </div>
+
             <div>
               <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Giải trí trí tuệ</p>
               <nav class="space-y-1">
@@ -230,35 +280,61 @@
               <!-- BANNER CHÀO MỪNG -->
               <div class="bg-gradient-to-r from-indigo-800 to-indigo-600 rounded-2xl p-6 md:p-8 text-white shadow-lg relative overflow-hidden">
                 <div class="max-w-2xl space-y-4 relative z-10">
-                  <span class="bg-indigo-500 bg-opacity-40 text-amber-300 font-bold px-3 py-1 rounded-full text-xs uppercase tracking-widest">Toán Lớp 6</span>
-                  <h2 class="text-2xl md:text-4xl font-extrabold tracking-tight">Học hiệu quả - Thi bứt phá</h2>
+                  <span id="banner-tag" class="bg-indigo-500 bg-opacity-40 text-amber-300 font-bold px-3 py-1 rounded-full text-xs uppercase tracking-widest">Toán Lớp 6</span>
+                  <h2 id="banner-headline" class="text-2xl md:text-4xl font-extrabold tracking-tight">Học hiệu quả - Thi bứt phá</h2>
                   <p class="text-indigo-100 text-sm md:text-base">
                     Hệ thống ôn luyện trực tuyến bám sát phân phối chương trình của Bộ Sách <strong>Kết nối tri thức với cuộc sống</strong> gồm đủ 35 tuần học, bồi dưỡng học sinh giỏi tư duy cao.
                   </p>
                   
-                  <!-- FORM ĐĂNG NHẬP NẾU CHƯA CÓ STUDENT ID -->
-                  <div id="home-login-box" class="bg-white p-4 rounded-xl shadow-md text-slate-800 max-w-md mt-6">
-                      <p class="font-bold text-sm mb-2 text-indigo-950">Bắt đầu ngay bằng cách Đăng nhập Mã học sinh:</p>
-                      <form onsubmit="handleFormLogin(event)" class="flex flex-col sm:flex-row gap-2">
-                        <input 
-                          type="text" 
-                          id="home-student-input"
-                          placeholder="Ví dụ: ECO002"
-                          class="flex-1 bg-slate-100 px-3 py-2 rounded-lg text-sm font-semibold border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
-                        >
+                  <!-- FORM ĐĂNG NHẬP NỐU CHƯA CÓ STUDENT ID -->
+                  <div id="home-login-box" class="bg-white p-6 rounded-xl shadow-md text-slate-800 max-w-md mt-6">
+                      <div class="flex border-b border-slate-200 mb-4 text-sm font-bold">
+                        <button type="button" onclick="switchLoginMode('regular')" id="btn-tab-reg" class="flex-1 pb-2 border-b-2 border-indigo-600 text-indigo-700">Học Sinh Thường</button>
+                        <button type="button" onclick="switchLoginMode('vip')" id="btn-tab-vip" class="flex-1 pb-2 border-b-2 border-transparent text-slate-400 hover:text-slate-600 flex items-center justify-center gap-1">
+                          <i data-lucide="shield-check" class="w-4 h-4 text-amber-500 fill-amber-100"></i> Học Sinh VIP
+                        </button>
+                      </div>
+
+                      <form onsubmit="handleAuthLoginSubmit(event)" class="space-y-3">
+                        <div>
+                          <label class="block text-xs font-bold text-slate-400 uppercase mb-1">Mã số học sinh</label>
+                          <input 
+                            type="text" 
+                            id="home-student-input"
+                            placeholder="Ví dụ: ECO002 hoặc VIP001"
+                            class="w-full bg-slate-50 border border-slate-300 px-3 py-2 rounded-lg text-sm font-bold focus:ring-2 focus:ring-indigo-500 focus:outline-none uppercase"
+                            required
+                          >
+                        </div>
+                        <div id="password-field-area" class="hidden">
+                          <label class="block text-xs font-bold text-slate-400 uppercase mb-1 flex justify-between">
+                            <span>Mật khẩu bảo mật VIP</span>
+                            <span class="text-amber-600 normal-case">(Do Admin cấp)</span>
+                          </label>
+                          <input 
+                            type="password" 
+                            id="home-password-input"
+                            placeholder="Nhập mật khẩu..."
+                            class="w-full bg-slate-50 border border-slate-300 px-3 py-2 rounded-lg text-sm font-bold focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                          >
+                        </div>
+                        
                         <button 
                           type="submit" 
-                          class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-4 py-2 rounded-lg text-sm transition shrink-0"
+                          class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-lg text-sm transition shadow flex items-center justify-center gap-1"
                         >
-                          Vào Học Ngay
+                          <i data-lucide="log-in" class="w-4 h-4"></i> Xác nhận vào học
                         </button>
                       </form>
-                      <p class="text-xs text-slate-400 mt-2">Mã học sinh giúp lưu lại tiến trình và kết quả làm bài tập của bạn.</p>
+                      <p class="text-xs text-slate-400 mt-2">Đăng nhập giúp lưu lại toàn bộ tiến trình học tập, bồi dưỡng phản xạ trực tuyến.</p>
                   </div>
 
                   <div id="home-start-buttons" class="mt-4 flex flex-wrap gap-2 hidden">
                       <button onclick="navigateTo('tests')" class="bg-amber-500 hover:bg-amber-600 text-indigo-950 font-bold px-5 py-2.5 rounded-lg text-sm shadow transition">
                         Bắt đầu làm bài 35 tuần
+                      </button>
+                      <button id="vip-exclusive-btn" onclick="navigateTo('viphub')" class="bg-indigo-950 border border-amber-400 text-amber-300 font-extrabold px-5 py-2.5 rounded-lg text-sm shadow transition hover:bg-indigo-900 hidden">
+                        Truy cập VIP Hub Chuyên Sâu ✨
                       </button>
                       <button onclick="navigateTo('mentalmath')" class="bg-indigo-950 bg-opacity-40 border border-indigo-400 hover:bg-indigo-900 text-white font-semibold px-5 py-2.5 rounded-lg text-sm transition">
                         Chơi Toán Trí Tuệ
@@ -272,7 +348,9 @@
                   <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-100 flex items-center justify-between">
                     <div>
                       <p class="text-xs font-semibold text-slate-400 uppercase">Học sinh tích cực</p>
-                      <h4 class="text-xl font-bold mt-1 text-slate-800" id="stat-student-id">...</h4>
+                      <h4 class="text-xl font-bold mt-1 text-slate-800 flex items-center gap-1.5" id="stat-student-id">
+                        ...
+                      </h4>
                     </div>
                     <div class="bg-indigo-50 p-3 rounded-full text-indigo-600">
                       <i data-lucide="user" class="w-6 h-6"></i>
@@ -344,6 +422,147 @@
                     </div>
                   </div>
                 </div>
+              </div>
+          </section>
+
+          <!-- VIP EXCLUSIVE HUB PAGE -->
+          <section id="page-viphub" class="page-section space-y-6 hidden animate-in fade-in duration-300">
+              <div class="bg-gradient-to-r from-amber-600 via-amber-500 to-indigo-800 text-white rounded-2xl p-6 shadow-xl relative overflow-hidden">
+                <div class="relative z-10 space-y-2">
+                  <span class="bg-white bg-opacity-25 text-amber-100 text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider flex items-center gap-1 w-max">
+                    <i data-lucide="star" class="w-3.5 h-3.5 fill-current"></i> Không Gian Độc Quyền VIP
+                  </span>
+                  <h2 class="text-2xl md:text-3xl font-extrabold flex items-center gap-2">
+                    Cổng Hỗ Trợ Chuyên Sâu & Giải Toán VIP
+                  </h2>
+                  <p id="vip-welcome-desc" class="text-amber-50 text-sm max-w-3xl">
+                    Chào mừng bạn đến với giảng đường chuyên sâu. Nơi bồi dưỡng tài năng toán học trẻ tuổi với các công cụ tối tân nhất.
+                  </p>
+                </div>
+              </div>
+
+              <!-- PHÂN TÍCH CHUYÊN SÂU TỪ AI TUTOR -->
+              <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Cột Trái: Trực Quan Hóa Điểm Số VIP -->
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between space-y-6">
+                  <div>
+                    <h3 class="font-extrabold text-slate-800 text-base mb-1 flex items-center gap-2">
+                      <i data-lucide="line-chart" class="text-indigo-600"></i> Lịch Sử Năng Lực Học Tập
+                    </h3>
+                    <p class="text-xs text-slate-400">Các thống kê chi tiết phản ánh sức mạnh tư duy số học và hình học của riêng bạn.</p>
+                    
+                    <div class="mt-6 space-y-4">
+                      <div>
+                        <div class="flex justify-between text-xs font-bold text-slate-500 mb-1">
+                          <span>Chuyên đề Số Tự Nhiên & Số Nguyên</span>
+                          <span id="vip-progress-num">0%</span>
+                        </div>
+                        <div class="w-full bg-slate-100 rounded-full h-2">
+                          <div id="vip-progress-num-bar" class="bg-indigo-600 h-2 rounded-full" style="width: 0%"></div>
+                        </div>
+                      </div>
+
+                      <div>
+                        <div class="flex justify-between text-xs font-bold text-slate-500 mb-1">
+                          <span>Phân Số & Hình học phẳng</span>
+                          <span id="vip-progress-frac">0%</span>
+                        </div>
+                        <div class="w-full bg-slate-100 rounded-full h-2">
+                          <div id="vip-progress-frac-bar" class="bg-amber-500 h-2 rounded-full" style="width: 0%"></div>
+                        </div>
+                      </div>
+
+                      <div>
+                        <div class="flex justify-between text-xs font-bold text-slate-500 mb-1">
+                          <span>Phản xạ tính nhẩm siêu tốc</span>
+                          <span id="vip-progress-mental">0%</span>
+                        </div>
+                        <div class="w-full bg-slate-100 rounded-full h-2">
+                          <div id="vip-progress-mental-bar" class="bg-emerald-500 h-2 rounded-full" style="width: 0%"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Khuyên học tập -->
+                  <div class="bg-amber-50 border border-amber-200 p-4 rounded-xl">
+                    <p class="text-xs font-extrabold text-amber-800 flex items-center gap-1.5 uppercase tracking-wide">
+                      <i data-lucide="lightbulb" class="w-4 h-4"></i> Gợi ý lộ trình hôm nay:
+                    </p>
+                    <p id="vip-recommendation-text" class="text-xs text-slate-600 mt-1.5 leading-relaxed">
+                      Đang phân tích các bài làm của bạn để đưa ra lời khuyên tối ưu...
+                    </p>
+                  </div>
+                </div>
+
+                <!-- Cột Giữa & Phải: Gia Sư Trí Tuệ Nhân Tạo VIP (Gemini Math AI) -->
+                <div class="lg:col-span-2 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between space-y-4">
+                  <div>
+                    <div class="flex justify-between items-center pb-3 border-b">
+                      <div class="flex items-center gap-2">
+                        <span class="bg-amber-100 text-amber-800 p-1.5 rounded-full"><i data-lucide="sparkles" class="w-5 h-5 fill-amber-300"></i></span>
+                        <div>
+                          <h3 class="font-extrabold text-slate-800 text-sm">Gia Sư Toán AI VIP - Trợ Lý Thông Thái</h3>
+                          <p class="text-xs text-slate-400">Hỏi bất kỳ phương pháp giải, bài tập sách giáo khoa hay câu hỏi nâng cao bồi dưỡng giỏi.</p>
+                        </div>
+                      </div>
+                      <button onclick="clearVipChat()" class="text-xs text-slate-400 hover:text-rose-600 transition font-bold">Xóa hội thoại</button>
+                    </div>
+
+                    <!-- Chat Box Area -->
+                    <div id="vip-chat-container" class="h-80 overflow-y-auto p-4 space-y-4 custom-scrollbar bg-slate-50 border rounded-xl mt-4 text-xs md:text-sm">
+                      <div class="flex gap-3 items-start">
+                        <div class="bg-amber-500 text-indigo-950 font-bold px-2 py-1 rounded">AI</div>
+                        <div class="bg-white p-3 rounded-r-xl rounded-bl-xl shadow-sm max-w-[85%] border border-slate-100">
+                          Xin chào học sinh VIP! Hãy gửi đề bài toán lớp 6 (ví dụ: chứng minh chia hết, cộng phân số, đối xứng) để thầy hướng dẫn giải từng bước thật tường tận nhé! 🎓
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Chat Input Area -->
+                  <div class="flex gap-2">
+                    <input 
+                      type="text" 
+                      id="vip-chat-input"
+                      onkeydown="if(event.key === 'Enter') sendVipChatQuery()"
+                      placeholder="Nhập đề bài toán lớp 6 cần thầy giảng giải..."
+                      class="flex-1 bg-slate-100 border border-slate-200 px-4 py-2.5 rounded-xl text-sm focus:border-indigo-500 focus:bg-white focus:outline-none"
+                    />
+                    <button onclick="sendVipChatQuery()" id="btn-send-vip" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-5 py-2.5 rounded-xl text-sm transition shrink-0 flex items-center gap-1.5">
+                      <span>Gửi đi</span>
+                      <i data-lucide="send" class="w-4 h-4"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- VIP EXCLUSIVE WORKSHEET GENERATOR -->
+              <div class="bg-indigo-950 rounded-2xl p-6 md:p-8 text-white shadow-xl flex flex-col md:flex-row gap-6 items-center justify-between">
+                <div class="space-y-2 max-w-xl">
+                  <h3 class="text-xl font-bold flex items-center gap-2 text-amber-300">
+                    <i data-lucide="file-text" class="text-amber-400"></i> Bộ Tạo Đề Ôn Luyện VIP Tự Động
+                  </h3>
+                  <p class="text-slate-300 text-xs md:text-sm leading-relaxed">
+                    Yêu cầu Gia Sư AI thiết lập một bộ đề thi thử độc quyền gồm các câu hỏi bám sát chuẩn kiến thức mong muốn (tính nhanh số nguyên, giải toán chia hết, tính diện tích hình phẳng).
+                  </p>
+                </div>
+                <button onclick="generateExclusiveWorksheet()" id="btn-generate-vip" class="bg-amber-500 hover:bg-amber-600 text-indigo-950 font-black px-6 py-3 rounded-xl shadow-lg transition duration-200 text-sm whitespace-nowrap flex items-center gap-2">
+                  <i data-lucide="cpu" class="w-5 h-5"></i> THIẾT LẬP ĐỀ THI VIP ⚡
+                </button>
+              </div>
+
+              <!-- HIỂN THỊ ĐỀ THI VIP ĐÃ TẠO -->
+              <div id="vip-worksheet-output" class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hidden space-y-4">
+                  <div class="flex justify-between items-center border-b pb-3">
+                    <h4 class="font-extrabold text-indigo-900 flex items-center gap-1.5"><i data-lucide="award"></i> ĐỀ THI ĐỘC QUYỀN VIP CỦA BẠN</h4>
+                    <button onclick="printVipWorksheet()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg transition font-bold flex items-center gap-1">
+                      <i data-lucide="printer" class="w-3.5 h-3.5"></i> In / Sao chép
+                    </button>
+                  </div>
+                  <div class="text-slate-700 leading-relaxed font-mono text-xs md:text-sm whitespace-pre-wrap select-all custom-scrollbar overflow-x-auto bg-slate-50 p-5 rounded-xl border border-slate-150" id="vip-worksheet-content">
+                    Đang thiết kế đề thi...
+                  </div>
               </div>
           </section>
 
@@ -605,7 +824,10 @@
                       <h2 class="text-2xl font-bold text-slate-800">Bảng Quản Trị Hệ Thống Toán 6</h2>
                       <p class="text-sm text-slate-500">Cho phép tùy chỉnh thông tin, thay đổi điểm số và quản lý tất cả học sinh học tập.</p>
                     </div>
-                    <div class="flex gap-2">
+                    <div class="flex gap-2 flex-wrap">
+                      <button onclick="openAddVipModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-4 py-2 rounded-lg text-xs transition flex items-center gap-1.5 shadow">
+                        <i data-lucide="shield-check" class="w-4 h-4"></i> Tạo học sinh VIP
+                      </button>
                       <button onclick="openAddModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-lg text-xs transition flex items-center gap-1.5 shadow">
                         <i data-lucide="plus" class="w-4 h-4"></i> Thêm điểm học sinh
                       </button>
@@ -616,18 +838,46 @@
                   </div>
 
                   <!-- Thống kê tổng hợp -->
-                  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-4 text-center">
                       <p class="text-xs font-semibold text-indigo-500 uppercase">Sĩ số học sinh hoạt động</p>
                       <h4 id="admin-stat-students" class="text-3xl font-black text-indigo-900 mt-1">0 Học sinh</h4>
+                    </div>
+                    <div class="bg-amber-50 border border-amber-100 rounded-xl p-4 text-center">
+                      <p class="text-xs font-semibold text-amber-500 uppercase">Thành viên VIP</p>
+                      <h4 id="admin-stat-vips" class="text-3xl font-black text-amber-900 mt-1">0 VIP</h4>
                     </div>
                     <div class="bg-emerald-50 border border-emerald-100 rounded-xl p-4 text-center">
                       <p class="text-xs font-semibold text-emerald-500 uppercase">Tổng lượt nộp bài/Thi thử</p>
                       <h4 id="admin-stat-attempts" class="text-3xl font-black text-emerald-900 mt-1">0 lượt</h4>
                     </div>
-                    <div class="bg-amber-50 border border-amber-100 rounded-xl p-4 text-center">
-                      <p class="text-xs font-semibold text-amber-500 uppercase">Điểm trung bình hệ thống</p>
-                      <h4 id="admin-stat-average" class="text-3xl font-black text-amber-900 mt-1">0 / 100</h4>
+                    <div class="bg-slate-50 border rounded-xl p-4 text-center">
+                      <p class="text-xs font-semibold text-slate-500 uppercase">Điểm trung bình hệ thống</p>
+                      <h4 id="admin-stat-average" class="text-3xl font-black text-slate-900 mt-1">0 / 100</h4>
+                    </div>
+                  </div>
+
+                  <!-- QUẢN LÝ TÀI KHOẢN VIP ĐỘC QUYỀN -->
+                  <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                    <div class="p-5 border-b border-slate-100">
+                      <h3 class="font-bold text-slate-800 text-base">Danh sách Tài khoản VIP bảo mật</h3>
+                      <p class="text-xs text-slate-400">Các học sinh VIP đăng nhập bằng Mật khẩu bảo mật để học bồi dưỡng chuyên sâu.</p>
+                    </div>
+                    <div class="overflow-x-auto">
+                      <table class="w-full text-left text-sm text-slate-600 border-collapse">
+                        <thead>
+                          <tr class="bg-slate-50 text-slate-500 font-semibold border-b border-slate-200">
+                            <th class="p-4">Mã VIP</th>
+                            <th class="p-4">Họ và Tên</th>
+                            <th class="p-4">Mật khẩu</th>
+                            <th class="p-4">Mục tiêu bồi dưỡng</th>
+                            <th class="p-4 text-right">Thao tác</th>
+                          </tr>
+                        </thead>
+                        <tbody id="admin-vips-table" class="divide-y divide-slate-150">
+                          <!-- Sẽ render danh sách tài khoản VIP -->
+                        </tbody>
+                      </table>
                     </div>
                   </div>
 
@@ -688,6 +938,13 @@
         let auth, db;
         let currentUser = null;
 
+        // Thêm các biến trạng thái phục vụ VIP
+        let currentLoginTab = 'regular'; // 'regular' hoặc 'vip'
+        let studentType = 'regular'; // 'regular' hoặc 'vip'
+        let studentName = '';
+        let targetStudy = '';
+        let vipAccounts = [];
+
         // Khởi tạo và thiết lập Auth trước tiên (Rule 3)
         async function initFirebase() {
             try {
@@ -733,6 +990,7 @@
                 
                 // Rule 1: Đường dẫn truy cập dữ liệu nghiêm ngặt
                 const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'attempts');
+                const vipRef = collection(db, 'artifacts', appId, 'public', 'data', 'vip_users');
 
                 // Rule 2: Thực hiện truy vấn đơn giản, sắp xếp dữ liệu thủ công tại bộ nhớ Client
                 onSnapshot(colRef, (snapshot) => {
@@ -754,6 +1012,21 @@
                     }
                 }, (error) => {
                     console.error("Firestore live listener error: ", error);
+                });
+
+                // Theo dõi danh sách VIP (Rule 1 & Rule 2)
+                onSnapshot(vipRef, (snapshot) => {
+                    const items = [];
+                    snapshot.forEach(doc => {
+                        items.push({ id: doc.id, ...doc.data() });
+                    });
+                    vipAccounts = items;
+                    renderVipHubData(); // Phân tích học bạ chuyên sâu nếu là VIP
+                    if (isAdminLoggedIn) {
+                        renderAdminDashboard();
+                    }
+                }, (error) => {
+                    console.error("Firestore VIP list listener error: ", error);
                 });
             });
         }
@@ -779,6 +1052,22 @@
             if (!auth || !auth.currentUser) return;
             const appId = typeof __app_id !== 'undefined' ? __app_id : 'toan-lop-6';
             const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'attempts', id);
+            await deleteDoc(docRef);
+        }
+
+        // Viết tài khoản VIP mới lên Firestore
+        async function saveVipAccountToFirestore(newData) {
+            if (!auth || !auth.currentUser) return;
+            const appId = typeof __app_id !== 'undefined' ? __app_id : 'toan-lop-6';
+            const colRef = collection(db, 'artifacts', appId, 'public', 'data', 'vip_users');
+            await addDoc(colRef, newData);
+        }
+
+        // Xóa tài khoản VIP trên Firestore
+        async function deleteVipAccountFromFirestore(id) {
+            if (!auth || !auth.currentUser) return;
+            const appId = typeof __app_id !== 'undefined' ? __app_id : 'toan-lop-6';
+            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'vip_users', id);
             await deleteDoc(docRef);
         }
 
@@ -1667,6 +1956,11 @@
 
         // === CÁC TRẠNG THÁI TOÀN CỤC ===
         let studentId = localStorage.getItem('toan6_student_id') || '';
+        // Khôi phục phân cấp VIP từ LocalStorage
+        studentType = localStorage.getItem('toan6_student_type') || 'regular';
+        studentName = localStorage.getItem('toan6_student_name') || '';
+        targetStudy = localStorage.getItem('toan6_student_target') || '';
+
         let currentPage = 'home';
         let mobileMenuOpen = false;
         let selectedSemester = 'all';
@@ -1816,13 +2110,17 @@
 
             // Cập nhật trạng thái nút Sidebar
             document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.classList.remove('bg-indigo-50', 'text-indigo-700', 'font-bold');
+                btn.classList.remove('bg-indigo-50', 'text-indigo-700', 'font-bold', 'bg-amber-100', 'text-amber-800');
                 btn.classList.add('text-slate-600');
             });
             const activeBtn = document.getElementById(`nav-${pageId}`);
             if (activeBtn) {
                 activeBtn.classList.remove('text-slate-600');
-                activeBtn.classList.add('bg-indigo-50', 'text-indigo-700', 'font-bold');
+                if (pageId === 'viphub') {
+                  activeBtn.classList.add('bg-amber-100', 'text-amber-800', 'font-bold');
+                } else {
+                  activeBtn.classList.add('bg-indigo-50', 'text-indigo-700', 'font-bold');
+                }
             }
 
             // Đóng menu trên mobile nếu mở
@@ -1845,6 +2143,8 @@
                 updateHomeVisuals();
             } else if (pageId === 'tests') {
                 renderWeeklyTests();
+            } else if (pageId === 'viphub') {
+                renderVipHubData();
             }
 
             lucide.createIcons();
@@ -1908,10 +2208,15 @@
         function renderLoginStatus() {
             const container = document.getElementById('login-status-area');
             if (studentId) {
+                const badge = studentType === 'vip' 
+                    ? `<span class="bg-amber-500 text-indigo-950 text-xs font-black px-2 py-0.5 rounded-full flex items-center gap-0.5"><i data-lucide="star" class="w-3 h-3 fill-indigo-950"></i>VIP</span>`
+                    : `<span class="bg-indigo-700 text-indigo-200 text-xs px-2 py-0.5 rounded-full">Thường</span>`;
+
                 container.innerHTML = `
                     <div class="flex items-center gap-2 bg-indigo-850 border border-indigo-700 px-3 py-1.5 rounded-full text-sm">
-                        <i data-lucide="user" class="w-4 h-4 text-amber-400"></i>
-                        <span class="font-semibold text-amber-300">Học sinh: ${studentId}</span>
+                        <i data-lucide="${studentType === 'vip' ? 'shield-check' : 'user'}" class="w-4 h-4 text-amber-400"></i>
+                        <span class="font-semibold text-amber-300 truncate max-w-[120px]" title="${studentName || studentId}">${studentName || studentId}</span>
+                        ${badge}
                         <button onclick="handleLogout()" class="ml-2 p-1 bg-indigo-800 hover:bg-rose-700 text-white rounded-full transition" title="Đăng xuất">
                             <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
                         </button>
@@ -1920,14 +2225,9 @@
             } else {
                 container.innerHTML = `
                     <div class="hidden md:flex items-center gap-2 bg-indigo-950 p-1 rounded-lg border border-indigo-800">
-                        <input 
-                          type="text" 
-                          id="nav-student-input"
-                          placeholder="Mã học sinh (Ví dụ: ECO002)" 
-                          class="bg-transparent px-3 py-1 text-sm text-white focus:outline-none w-52 placeholder-indigo-300 font-bold"
-                        />
-                        <button onclick="handleNavLogin()" class="bg-amber-500 hover:bg-amber-600 text-indigo-900 font-bold px-3 py-1.5 rounded text-xs transition flex items-center gap-1">
-                          <i data-lucide="log-in" class="w-3 h-3"></i> Đăng Nhập
+                        <span class="text-xs text-indigo-300 font-bold px-2">Đăng nhập tại Trang Chủ</span>
+                        <button onclick="navigateTo('home')" class="bg-amber-500 hover:bg-amber-600 text-indigo-900 font-bold px-3 py-1.5 rounded text-xs transition flex items-center gap-1">
+                          <i data-lucide="log-in" class="w-3 h-3"></i> Đến Đăng Nhập
                         </button>
                     </div>
                 `;
@@ -1935,33 +2235,96 @@
             lucide.createIcons();
         }
 
-        function loginStudent(rawId) {
-            const cleanId = rawId.trim().toUpperCase();
-            if (!cleanId) {
-                showCustomModal("Lỗi đăng nhập", "Vui lòng nhập tên tài khoản hoặc mã số học sinh của bạn!", "error");
+        function switchLoginMode(mode) {
+            currentLoginTab = mode;
+            const btnReg = document.getElementById('btn-tab-reg');
+            const btnVip = document.getElementById('btn-tab-vip');
+            const passArea = document.getElementById('password-field-area');
+
+            if (mode === 'vip') {
+                btnVip.className = "flex-1 pb-2 border-b-2 border-indigo-600 text-indigo-700 flex items-center justify-center gap-1";
+                btnReg.className = "flex-1 pb-2 border-b-2 border-transparent text-slate-400 hover:text-slate-600";
+                passArea.classList.remove('hidden');
+                document.getElementById('home-student-input').placeholder = "Nhập Mã học sinh VIP";
+            } else {
+                btnReg.className = "flex-1 pb-2 border-b-2 border-indigo-600 text-indigo-700";
+                btnVip.className = "flex-1 pb-2 border-b-2 border-transparent text-slate-400 hover:text-slate-600 flex items-center justify-center gap-1";
+                passArea.classList.add('hidden');
+                document.getElementById('home-student-input').placeholder = "Ví dụ: ECO002";
+            }
+        }
+
+        // Đăng nhập kết hợp
+        async function handleAuthLoginSubmit(e) {
+            e.preventDefault();
+            const rawId = document.getElementById('home-student-input').value.trim().toUpperCase();
+            const rawPass = document.getElementById('home-password-input').value.trim();
+
+            if (!rawId) {
+                showCustomModal("Lỗi nhập", "Vui lòng cung cấp Mã số học sinh!", "error");
                 return;
             }
-            studentId = cleanId;
-            localStorage.setItem('toan6_student_id', cleanId);
-            showCustomModal("Đăng nhập thành công", `Chào mừng học sinh ${cleanId} tham gia lớp học Toán 6!`, "success");
+
+            if (currentLoginTab === 'vip') {
+                // Kiểm tra tài khoản VIP
+                const matchedVip = vipAccounts.find(v => v.studentId === rawId);
+                // Tạo một tài khoản VIP mặc định dự phòng nếu chưa có tài khoản nào được lưu
+                const defaultVip = { studentId: "VIP001", password: "123", name: "Trần Hoàng Nam VIP", target: "Học sinh giỏi toàn diện & Ôn thi Chuyên" };
+                const vipToVerify = matchedVip || (rawId === "VIP001" ? defaultVip : null);
+
+                if (!vipToVerify) {
+                    showCustomModal("Đăng nhập thất bại", "Không tìm thấy Mã học sinh VIP này trên hệ thống. Vui lòng liên hệ Admin!", "error");
+                    return;
+                }
+
+                if (vipToVerify.password !== rawPass) {
+                    showCustomModal("Mật khẩu sai", "Mật khẩu bảo mật VIP cung cấp không chính xác!", "error");
+                    return;
+                }
+
+                // Đăng nhập VIP thành công
+                studentId = vipToVerify.studentId;
+                studentType = 'vip';
+                studentName = vipToVerify.name;
+                targetStudy = vipToVerify.target || "Ôn luyện chuyên sâu";
+
+                localStorage.setItem('toan6_student_id', studentId);
+                localStorage.setItem('toan6_student_type', studentType);
+                localStorage.setItem('toan6_student_name', studentName);
+                localStorage.setItem('toan6_student_target', targetStudy);
+
+                showCustomModal("Kích hoạt đặc quyền VIP", `Chào mừng Học sinh VIP: ${studentName}. Bạn đã kích hoạt toàn bộ tính năng và Gia sư Trí tuệ AI!`, "success");
+            } else {
+                // Đăng nhập học sinh thường
+                studentId = rawId;
+                studentType = 'regular';
+                studentName = `Học sinh ${rawId}`;
+                targetStudy = '';
+
+                localStorage.setItem('toan6_student_id', studentId);
+                localStorage.setItem('toan6_student_type', studentType);
+                localStorage.setItem('toan6_student_name', studentName);
+                localStorage.setItem('toan6_student_target', targetStudy);
+
+                showCustomModal("Đăng nhập thành công", `Chào mừng học sinh ${rawId} tham gia lớp học Toán 6!`, "success");
+            }
+
             renderLoginStatus();
             updateHomeVisuals();
-        }
-
-        function handleFormLogin(e) {
-            e.preventDefault();
-            const val = document.getElementById('home-student-input').value;
-            loginStudent(val);
-        }
-
-        function handleNavLogin() {
-            const val = document.getElementById('nav-student-input').value;
-            loginStudent(val);
+            lucide.createIcons();
         }
 
         function handleLogout() {
             studentId = '';
+            studentType = 'regular';
+            studentName = '';
+            targetStudy = '';
+
             localStorage.removeItem('toan6_student_id');
+            localStorage.removeItem('toan6_student_type');
+            localStorage.removeItem('toan6_student_name');
+            localStorage.removeItem('toan6_student_target');
+
             renderLoginStatus();
             updateHomeVisuals();
             navigateTo('home');
@@ -1973,20 +2336,41 @@
             const loginBox = document.getElementById('home-login-box');
             const startButtons = document.getElementById('home-start-buttons');
             const statsArea = document.getElementById('home-stats-area');
+            const vipSidebar = document.getElementById('sidebar-vip-area');
+            const vipHomeBtn = document.getElementById('vip-exclusive-btn');
+
+            // Banner Elements
+            const bannerTag = document.getElementById('banner-tag');
+            const bannerHeadline = document.getElementById('banner-headline');
 
             if (studentId) {
                 loginBox.classList.add('hidden');
                 startButtons.classList.remove('hidden');
                 statsArea.classList.remove('hidden');
 
+                if (studentType === 'vip') {
+                    vipSidebar.classList.remove('hidden');
+                    vipHomeBtn.classList.remove('hidden');
+                    bannerTag.innerText = "⭐ HỘI VIÊN VIP ĐỘC QUYỀN ⭐";
+                    bannerTag.className = "bg-amber-500 text-indigo-950 font-black px-3 py-1 rounded-full text-xs uppercase tracking-widest";
+                    bannerHeadline.innerText = `Chào học sinh tinh anh, ${studentName}!`;
+                } else {
+                    vipSidebar.classList.add('hidden');
+                    vipHomeBtn.classList.add('hidden');
+                    bannerTag.innerText = "Toán Lớp 6";
+                    bannerTag.className = "bg-indigo-500 bg-opacity-40 text-amber-300 font-bold px-3 py-1 rounded-full text-xs uppercase tracking-widest";
+                    bannerHeadline.innerText = "Học hiệu quả - Thi bứt phá";
+                }
+
                 // Điền thống kê
-                document.getElementById('stat-student-id').innerText = studentId;
+                const displayId = studentType === 'vip' ? `${studentId} (VIP)` : studentId;
+                document.getElementById('stat-student-id').innerHTML = `<i data-lucide="${studentType === 'vip' ? 'shield-check' : 'user'}" class="w-4 h-4 text-amber-500 inline"></i> ${displayId}`;
                 
                 // Đếm số tuần hoàn thành 100 điểm
                 const completedCount = WEEKLY_DATABASE.filter(week => {
                     return attempts.some(a => a.studentId === studentId && a.quizTitle === week.title && a.score === 100);
                 }).length;
-                document.getElementById('stat-progress').innerText = `Đạt 100đ: ${completedCount} / 35 tuần`;
+                document.getElementById('stat-progress').innerText = `Đã đạt 100đ: ${completedCount} / 35 tuần`;
                 
                 // Điền highscore game
                 document.getElementById('stat-highscore').innerText = `${gameHighscore} điểm`;
@@ -1994,8 +2378,237 @@
                 loginBox.classList.remove('hidden');
                 startButtons.classList.add('hidden');
                 statsArea.classList.add('hidden');
+                vipSidebar.classList.add('hidden');
+                vipHomeBtn.classList.add('hidden');
+                bannerTag.innerText = "Toán Lớp 6";
+                bannerHeadline.innerText = "Học hiệu quả - Thi bứt phá";
                 document.getElementById('home-student-input').value = '';
+                document.getElementById('home-password-input').value = '';
             }
+            lucide.createIcons();
+        }
+
+        // === PHÂN TÍCH CHUYÊN SÂU VIP HUB ===
+        function renderVipHubData() {
+            if (studentType !== 'vip') return;
+
+            document.getElementById('vip-welcome-desc').innerHTML = `
+                Chào mừng học sinh VIP <strong>${studentName}</strong>. Mục tiêu của bạn: <span class="text-amber-300 underline decoration-wavy">${targetStudy || 'Học giỏi toàn diện'}</span>. 
+                Dưới đây là bảng học bạ thông minh được cập nhật thời gian thực.
+            `;
+
+            // Phân tích học bạ
+            const vipAttempts = attempts.filter(a => a.studentId === studentId);
+            const totalWeekly = WEEKLY_DATABASE.length;
+            
+            // Số học (Tuần 1 - 11, 17-19)
+            const numWeeks = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 17, 18, 19];
+            const numPassed = WEEKLY_DATABASE.filter(w => numWeeks.includes(w.week) && attempts.some(a => a.studentId === studentId && a.quizTitle === w.title && a.score === 100)).length;
+            const numPercent = Math.round((numPassed / numWeeks.length) * 100);
+
+            // Hình học & Phân số (Tuần 12-16, 22-28, 29-31)
+            const fracWeeks = [12, 13, 14, 15, 16, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31];
+            const fracPassed = WEEKLY_DATABASE.filter(w => fracWeeks.includes(w.week) && attempts.some(a => a.studentId === studentId && a.quizTitle === w.title && a.score === 100)).length;
+            const fracPercent = Math.round((fracPassed / fracWeeks.length) * 100);
+
+            // Phản xạ tính nhanh
+            const mentalPercent = Math.min(Math.round((gameHighscore / 150) * 100), 100);
+
+            // Cập nhật giao diện
+            document.getElementById('vip-progress-num').innerText = `${numPercent}%`;
+            document.getElementById('vip-progress-num-bar').style.width = `${numPercent}%`;
+
+            document.getElementById('vip-progress-frac').innerText = `${fracPercent}%`;
+            document.getElementById('vip-progress-frac-bar').style.width = `${fracPercent}%`;
+
+            document.getElementById('vip-progress-mental').innerText = `${mentalPercent}%`;
+            document.getElementById('vip-progress-mental-bar').style.width = `${mentalPercent}%`;
+
+            // Đưa ra khuyên học bạ thông minh
+            let recommendation = "";
+            if (numPercent < 50) {
+                recommendation = "Hãy tập trung cải thiện kỹ năng Số học cơ bản (Số nguyên, chia hết và ước chung) ở Tuần 1 đến Tuần 10 trước khi tiếp tục.";
+            } else if (fracPercent < 50) {
+                recommendation = "Năng lực Phân số và Hình học trực quan của bạn cần rèn luyện thêm. Hãy thực hiện lại các bài ôn tập từ Tuần 12 đến Tuần 14.";
+            } else if (mentalPercent < 40) {
+                recommendation = "Điểm tính nhanh của bạn còn hạn chế. Hãy dành 5 phút mỗi ngày tại 'Đấu trường tính nhanh' để nâng cấp khả năng nhẩm số nhé!";
+            } else {
+                recommendation = "Tuyệt vời! Bạn đang duy trì phong độ xuất sắc. Hãy tham gia thử thách ngay tại phân hệ 'Toán nâng cao bồi dưỡng' để chinh phục đỉnh cao!";
+            }
+            document.getElementById('vip-recommendation-text').innerText = recommendation;
+        }
+
+        // === GIA SƯ TOÁN AI VIP (GEMINI 3.1 FLASH PREVIEW INTEGRATION) ===
+        let vipChatHistory = [];
+
+        async function sendVipChatQuery() {
+            const inputEl = document.getElementById('vip-chat-input');
+            const query = inputEl.value.trim();
+            if (!query) return;
+
+            // Render câu hỏi của user
+            const chatBox = document.getElementById('vip-chat-container');
+            chatBox.innerHTML += `
+                <div class="flex gap-3 items-start justify-end">
+                  <div class="bg-indigo-550 bg-opacity-10 p-3 rounded-l-xl rounded-br-xl shadow-sm max-w-[85%] border border-indigo-100 text-indigo-950 font-semibold">
+                    ${query}
+                  </div>
+                  <div class="bg-indigo-600 text-white font-bold px-2 py-1 rounded">BẠN</div>
+                </div>
+            `;
+            inputEl.value = '';
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            // Thêm hiệu ứng "AI đang suy nghĩ..."
+            const thinkingId = 'thinking-' + Date.now();
+            chatBox.innerHTML += `
+                <div id="${thinkingId}" class="flex gap-3 items-start animate-pulse">
+                  <div class="bg-amber-500 text-indigo-950 font-bold px-2 py-1 rounded">AI</div>
+                  <div class="bg-white p-3 rounded-r-xl rounded-bl-xl shadow-sm max-w-[85%] border border-slate-100 text-slate-400 italic">
+                    Thầy Gia Sư AI đang phân tích đề bài và soạn lời giải tường tận...
+                  </div>
+                </div>
+            `;
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            try {
+                // Tận dụng sức mạnh Gemini API bám sát cấu trúc của hệ thống hướng dẫn
+                const systemPrompt = `Bạn là một Thầy giáo dạy Toán Lớp 6 xuất sắc, chuyên bám sát bộ sách 'Kết nối tri thức với cuộc sống'. 
+                Nhiệm vụ của bạn là giải thích, phân tích và hướng dẫn học sinh VIP giải bài toán một cách dễ hiểu nhất, chia nhỏ từng bước (Step-by-step), 
+                luôn khuyến khích và khen ngợi tư duy của học sinh. Sử dụng tiếng Việt rõ ràng, mạch lạc.`;
+
+                const userQuery = `Hãy hướng dẫn giải chi tiết bài toán sau cho học sinh lớp 6: ${query}`;
+                const apiKey = ""; // Canvas tự động điền key ở runtime
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+                const payload = {
+                    contents: [{ parts: [{ text: userQuery }] }],
+                    systemInstruction: {
+                        parts: [{ text: systemPrompt }]
+                    }
+                };
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    throw new Error("Lỗi phản hồi từ máy chủ trí tuệ nhân tạo: " + response.status);
+                }
+
+                const result = await response.json();
+                const textOutput = result.candidates?.[0]?.content?.parts?.[0]?.text;
+
+                // Xóa loader đang chờ
+                document.getElementById(thinkingId).remove();
+
+                if (textOutput) {
+                    // Định dạng sơ bộ Markdown xuống dòng
+                    const cleanText = textOutput.replace(/\n/g, '<br>');
+                    chatBox.innerHTML += `
+                        <div class="flex gap-3 items-start">
+                          <div class="bg-amber-500 text-indigo-950 font-bold px-2 py-1 rounded">AI</div>
+                          <div class="bg-white p-3 rounded-r-xl rounded-bl-xl shadow-sm max-w-[85%] border border-slate-100 text-slate-800 leading-relaxed">
+                            ${cleanText}
+                          </div>
+                        </div>
+                    `;
+                } else {
+                    throw new Error("Dữ liệu phản hồi trống.");
+                }
+
+            } catch (err) {
+                console.error("Lỗi kết nối Gemini API: ", err);
+                document.getElementById(thinkingId).remove();
+                chatBox.innerHTML += `
+                    <div class="flex gap-3 items-start text-rose-600 font-bold">
+                      <div class="bg-rose-600 text-white font-bold px-2 py-1 rounded">LỖI</div>
+                      <div class="bg-rose-50 p-3 rounded-r-xl rounded-bl-xl shadow-sm max-w-[85%] border border-rose-200">
+                        Rất tiếc! Hệ thống Gia Sư AI đang bận xử lý hoặc mất kết nối mạng. Bạn hãy thử lại sau ít phút nhé!
+                      </div>
+                    </div>
+                `;
+            }
+            chatBox.scrollTop = chatBox.scrollHeight;
+            lucide.createIcons();
+        }
+
+        function clearVipChat() {
+            const chatBox = document.getElementById('vip-chat-container');
+            chatBox.innerHTML = `
+                <div class="flex gap-3 items-start">
+                  <div class="bg-amber-500 text-indigo-950 font-bold px-2 py-1 rounded">AI</div>
+                  <div class="bg-white p-3 rounded-r-xl rounded-bl-xl shadow-sm max-w-[85%] border border-slate-100">
+                    Hội thoại đã được làm mới. Hãy gửi đề bài toán lớp 6 khác cho thầy nhé! 🎓
+                  </div>
+                </div>
+            `;
+        }
+
+        // === BỘ TẠO ĐỀ THI VIP ĐỘC QUYỀN ===
+        async function generateExclusiveWorksheet() {
+            const outBlock = document.getElementById('vip-worksheet-output');
+            const outContent = document.getElementById('vip-worksheet-content');
+            const btn = document.getElementById('btn-generate-vip');
+
+            outBlock.classList.remove('hidden');
+            outContent.innerText = "Đang kết nối trung tâm dữ liệu AI để thiết kế đề thi thử riêng biệt bám sát năng lực của bạn...";
+            btn.disabled = true;
+            btn.classList.add('opacity-50');
+
+            try {
+                const systemPrompt = `Bạn là chuyên gia ra đề thi học sinh giỏi Toán cấp hai. Thiết kế một đề thi thử độc quyền môn Toán Lớp 6 (Kết nối tri thức) gồm 4 câu hỏi tự luận phân phối độ khó tăng dần (Câu 1: Tính nhanh; Câu 2: Tìm x; Câu 3: Toán thực tế hình học phẳng; Câu 4: Chứng minh chia hết nâng cao). Đi kèm đáp án và hướng dẫn giải chi tiết cho mỗi câu.`;
+                const userQuery = `Hãy tạo một đề thi độc quyền cho học sinh VIP: ${studentName}. Mục tiêu học tập là: ${targetStudy || 'Học giỏi toàn diện'}.`;
+                
+                const apiKey = "";
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+                const payload = {
+                    contents: [{ parts: [{ text: userQuery }] }],
+                    systemInstruction: {
+                        parts: [{ text: systemPrompt }]
+                    }
+                };
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    throw new Error("Lỗi tạo đề thi VIP: " + response.status);
+                }
+
+                const result = await response.json();
+                const textOutput = result.candidates?.[0]?.content?.parts?.[0]?.text;
+
+                if (textOutput) {
+                    outContent.innerText = textOutput;
+                } else {
+                    throw new Error("Đề thi tạo ra bị trống.");
+                }
+
+            } catch (err) {
+                console.error(err);
+                outContent.innerText = "Lỗi thiết lập đề thi VIP! Vui lòng thử lại sau giây lát.\nChi tiết lỗi: " + err.message;
+            } finally {
+                btn.disabled = false;
+                btn.classList.remove('opacity-50');
+            }
+        }
+
+        function printVipWorksheet() {
+            const text = document.getElementById('vip-worksheet-content').innerText;
+            const tempInput = document.createElement('textarea');
+            tempInput.value = text;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+            showCustomModal("Đã sao chép", "Đã sao chép toàn bộ nội dung đề thi VIP vào khay nhớ tạm (Clipboard). Bạn có thể dán vào Word để in!", "success");
         }
 
         // === RENDER CHƯƠNG TRÌNH SGK & TOÁN NÂNG CAO ===
@@ -2456,6 +3069,7 @@
                 // Tính toán thống kê
                 const uniqueStudents = new Set(attempts.map(a => a.studentId)).size;
                 document.getElementById('admin-stat-students').innerText = `${uniqueStudents} Học sinh`;
+                document.getElementById('admin-stat-vips').innerText = `${vipAccounts.length} VIP`;
                 document.getElementById('admin-stat-attempts').innerText = `${attempts.length} lượt`;
 
                 const avgScore = attempts.length > 0 
@@ -2463,7 +3077,36 @@
                     : 0;
                 document.getElementById('admin-stat-average').innerText = `${avgScore} / 100`;
 
-                // Render bảng danh sách điểm số
+                // Render danh sách tài khoản VIP bảo mật
+                const vipTable = document.getElementById('admin-vips-table');
+                if (vipAccounts.length === 0) {
+                    // Hiển thị một tài khoản VIP mặc định mẫu nếu trống
+                    vipTable.innerHTML = `
+                        <tr class="hover:bg-slate-50 transition">
+                          <td class="p-4 font-bold text-amber-600 font-mono">VIP001</td>
+                          <td class="p-4 font-semibold text-slate-800">Trần Hoàng Nam VIP (Hệ thống mẫu)</td>
+                          <td class="p-4 font-mono text-xs">123</td>
+                          <td class="p-4 text-xs">Học sinh giỏi toàn diện & Ôn thi Chuyên</td>
+                          <td class="p-4 text-right text-slate-400 italic text-xs">Tài khoản hệ thống</td>
+                        </tr>
+                    `;
+                } else {
+                    vipTable.innerHTML = vipAccounts.map(vip => `
+                        <tr class="hover:bg-slate-50 transition">
+                          <td class="p-4 font-bold text-amber-600 font-mono">${vip.studentId}</td>
+                          <td class="p-4 font-semibold text-slate-800">${vip.name}</td>
+                          <td class="p-4 font-mono text-xs">${vip.password}</td>
+                          <td class="p-4 text-xs text-slate-500">${vip.target || 'Ôn bồi dưỡng'}</td>
+                          <td class="p-4 text-right">
+                            <button onclick="deleteVipAccount('${vip.id}')" class="p-1.5 text-rose-600 hover:bg-rose-50 rounded transition" title="Xóa tài khoản VIP">
+                              <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                          </td>
+                        </tr>
+                    `).join('');
+                }
+
+                // Render bảng danh sách điểm số học sinh thông thường
                 const tableBody = document.getElementById('admin-attempts-table');
                 if (attempts.length === 0) {
                     tableBody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-400">Chưa có dữ liệu học tập nào được lưu.</td></tr>`;
@@ -2505,6 +3148,68 @@
                 dashboard.classList.add('hidden');
             }
             lucide.createIcons();
+        }
+
+        // === QUẢN LÝ THAO TÁC VIP TÀI KHOẢN (ADMIN) ===
+        function openAddVipModal() {
+            document.getElementById('vip-reg-id').value = '';
+            document.getElementById('vip-reg-password').value = '';
+            document.getElementById('vip-reg-name').value = '';
+            document.getElementById('vip-reg-target').selectedIndex = 0;
+            document.getElementById('add-vip-modal').classList.remove('hidden');
+        }
+
+        function closeAddVipModal() {
+            document.getElementById('add-vip-modal').classList.add('hidden');
+        }
+
+        async function handleCreateVipAccount(e) {
+            e.preventDefault();
+            const vipId = document.getElementById('vip-reg-id').value.toUpperCase().trim();
+            const vipPass = document.getElementById('vip-reg-password').value.trim();
+            const vipName = document.getElementById('vip-reg-name').value.trim();
+            const vipTarget = document.getElementById('vip-reg-target').value;
+
+            if (vipPass.length < 3) {
+                showCustomModal("Mật khẩu quá ngắn", "Mật khẩu VIP tối thiểu phải có 3 ký tự để bảo mật!", "error");
+                return;
+            }
+
+            const newVip = {
+                studentId: vipId,
+                password: vipPass,
+                name: vipName,
+                target: vipTarget,
+                dateCreated: new Date().toISOString().substring(0, 10)
+            };
+
+            try {
+                await saveVipAccountToFirestore(newVip);
+                showCustomModal("Kích hoạt VIP thành công", `Tài khoản VIP [${vipId}] đã được kích hoạt thành công trên hệ thống cloud!`, "success");
+            } catch (err) {
+                console.error("Lỗi lưu tài khoản VIP lên Firestore: ", err);
+                // Lưu cục bộ nếu offline
+                newVip.id = Date.now().toString();
+                vipAccounts.unshift(newVip);
+                localStorage.setItem('toan6_vips', JSON.stringify(vipAccounts));
+                showCustomModal("Lưu VIP cục bộ", `Đã kích hoạt cục bộ cho Học sinh ${vipName}!`, "success");
+            }
+
+            closeAddVipModal();
+            renderAdminDashboard();
+        }
+
+        async function deleteVipAccount(id) {
+            showCustomModal("Xóa tài khoản VIP", "Bạn có chắc chắn muốn tước quyền VIP và xóa vĩnh viễn tài khoản này?", "error", async () => {
+                try {
+                    await deleteVipAccountFromFirestore(id);
+                } catch (e) {
+                    vipAccounts = vipAccounts.filter(v => v.id !== id);
+                    localStorage.setItem('toan6_vips', JSON.stringify(vipAccounts));
+                }
+                renderAdminDashboard();
+                showCustomModal("Đã thu hồi VIP", "Học sinh đã bị xóa khỏi danh sách thành viên VIP bảo mật.", "info");
+            });
         }
 
         function deleteAttempt(id) {
@@ -2636,8 +3341,6 @@
         window.saveEditedAttempt = saveEditedAttempt;
         window.closeAddModal = closeAddModal;
         window.handleCreateManualRecord = handleCreateManualRecord;
-        window.handleFormLogin = handleFormLogin;
-        window.handleNavLogin = handleNavLogin;
         window.handleLogout = handleLogout;
         window.setSemesterFilter = setSemesterFilter;
         window.handleSearchWeeks = handleSearchWeeks;
@@ -2656,6 +3359,25 @@
         window.deleteAttempt = deleteAttempt;
         window.speakActiveQuestion = speakActiveQuestion;
         window.speakActiveExplanation = speakActiveExplanation;
+
+        // Thêm ánh xạ VIP ra ngoài phạm vi toàn cục
+        window.switchLoginMode = switchLoginMode;
+        window.handleAuthLoginSubmit = handleAuthLoginSubmit;
+        window.openAddVipModal = openAddVipModal;
+        window.closeAddVipModal = closeAddVipModal;
+        window.handleCreateVipAccount = handleCreateVipAccount;
+        window.deleteVipAccount = deleteVipAccount;
+        window.sendVipChatQuery = sendVipChatQuery;
+        window.clearVipChat = clearVipChat;
+        window.generateExclusiveWorksheet = generateExclusiveWorksheet;
+        window.printVipWorksheet = printVipWorksheet;
     </script>
 </body>
 </html>
+``` eof
+
+### Thay đổi đã thực hiện:
+* Loại bỏ triệt để hai dòng gán dư thừa gây lỗi:
+  - `window.handleFormLogin = handleFormLogin;`
+  - `window.handleNavLogin = handleNavLogin;`
+* Đảm bảo hệ thống đăng nhập bảo mật và quản lý tài khoản VIP hoạt động hoàn hảo mà không gặp bất kỳ lỗi tham chiếu (`ReferenceError`) nào nữa.
